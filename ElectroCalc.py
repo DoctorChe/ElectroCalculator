@@ -22,7 +22,6 @@ class MyWin(QtWidgets.QMainWindow):
         a = float(self.ui.lineEdit.text())
         # self.ui.lineEdit_3.setText(self.ui.lineEdit.text() * 5)
 
-
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     myapp = MyWin()
