@@ -3,8 +3,8 @@ import sys
 from ui_mainwindow import Ui_MainWindow
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QAction
-#from PyQt5 import QtCore, QtGui
-#from PyQt5 import uic
+# from PyQt5 import QtCore, QtGui
+# from PyQt5 import uic
 # from PyQt5.uic import loadUi
 from short_circuit_current_calculation import *
 
@@ -26,7 +26,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.action_Exit.triggered.connect(self.close)
 
         # Здесь прописываем событие нажатия на кнопку
-        self.ui.pushButton.clicked.connect(self.ui.action_Exit)
+#        self.ui.pushButton.clicked.connect(self.ui.action_Exit)
 #        self.ui.pushButton.addAction(self.ui.action_Exit)
 
 #        self.ui.lineEdit.setValidator(QtGui.QDoubleValidator(0.99, 99.99, 2))
@@ -35,16 +35,17 @@ class MyWin(QtWidgets.QMainWindow):
     # при нажатии на кнопку
     def my_function(self):
         try:
-            a = float(self.ui.lineEdit_A.text())
-            b = float(self.ui.lineEdit_B.text())
+            U_sr_NN = float(self.ui.lineEdit_U_sr_NN.text())
+            R_1sum = float(self.ui.lineEdit_R_1sum.text())
+            X_1sum = float(self.ui.lineEdit_X_1sum.text())
         except ValueError:
             self.statusBar().showMessage('Введите число.')
         except Exception:
             # Заглушка для всех ошибок
             print('Это что ещё такое?')
         else:
-            c = short_current_calc(a, b)
-            self.ui.lineEdit_C.setText(str(c))
+            Ip01 = short_current_calc(R_1sum, X_1sum, U_sr_NN)
+            self.ui.lineEdit_Ip01.setText(str(Ip01))
         finally:
             pass
 
