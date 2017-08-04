@@ -2,7 +2,7 @@ import sys
 # Импортируем наш интерфейс из файла
 from ui_mainwindow import Ui_MainWindow
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QAction
+# from PyQt5.QtWidgets import QAction
 # from PyQt5 import QtCore, QtGui
 # from PyQt5 import uic
 # from PyQt5.uic import loadUi
@@ -44,8 +44,9 @@ class MyWin(QtWidgets.QMainWindow):
             # Заглушка для всех ошибок
             print('Это что ещё такое?')
         else:
-            Ip01 = short_current_calc(R_1sum, X_1sum, U_sr_NN)
-            self.ui.lineEdit_Ip01.setText(str(Ip01))
+            Ip0_3ph = calc_Ip0_3ph(R_1sum, X_1sum, U_sr_NN)
+            self.ui.lineEdit_Ip0_3ph.setText(str(Ip0_3ph))
+#            self.ui.tab_5.
         finally:
             pass
 
