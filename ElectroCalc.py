@@ -26,6 +26,7 @@ class MyWin(QtWidgets.QMainWindow):
         self.ui.action_Exit.triggered.connect(self.close)
 
         # Здесь прописываем событие нажатия на кнопку
+        self.ui.pushButton.clicked.connect(self.my_function)
 #        self.ui.pushButton.clicked.connect(self.ui.action_Exit)
 #        self.ui.pushButton.addAction(self.ui.action_Exit)
 
@@ -45,10 +46,10 @@ class MyWin(QtWidgets.QMainWindow):
             print('Это что ещё такое?')
         else:
             Ip0_3ph = calc_Ip0_3ph(R_1sum, X_1sum, U_sr_NN)
-            self.ui.lineEdit_Ip0_3ph.setText(str(Ip0_3ph))
-#            self.ui.tab_5.
+            self.ui.lineEdit_Ip0_3ph.setText(str(round(Ip0_3ph, 1)))
         finally:
-            pass
+            # Выбирается вкладка "Результаты"
+            self.ui.tabWidget.setCurrentIndex(4)
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
