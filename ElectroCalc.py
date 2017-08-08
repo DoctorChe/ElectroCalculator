@@ -48,6 +48,7 @@ class MyWin(QtWidgets.QMainWindow):
             Ip0_3ph = calc_Ip0_3ph(R_1sum, X_1sum, U_sr_NN)
             self.ui.lineEdit_Ip0_3ph.setText(str(round(Ip0_3ph, 1)))
         finally:
+
             # Выбирается вкладка "Результаты"
             self.ui.tabWidget.setCurrentIndex(4)
 
