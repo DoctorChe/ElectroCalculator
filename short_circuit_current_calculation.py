@@ -7,12 +7,32 @@ Created on Mon Jul  3 15:18:40 2017
 import math
 
 
-def calc_Xs(Xs):
+def calc_Xs(switch, Sk_IkVN_Xs_Iotklnom, U_sr_NN, U_sr_VN):
     """
 Xs (Хс) - эквивалентное индуктивное сопротивление системы до понижающего
 трансформатора, мОм, приведенное к ступени низшего напряжения
+switch - переключатель расчёта параметра Xc:
+    Sk - расчёт по величине Sк
+    IkVN - расчёт по величине IкВН
+    Xs - расчёт по величине Xс
+    Iotklnom - расчёт по величине Iоткл.ном
+U_sr_NN (Uср.НН) - среднее номинальное напряжение сети, подключенной к обмотке
+    низшего напряжения трансформатора, В
+U_sr_VN (Uср.ВН) - среднее номинальное напряжение сети, к которой подключена
+    обмотка высшего напряжения трансформатора, В
+Sк - условная мощность короткого замыкания у выводов обмотки высшего напряжения
+    трансформатора, MBА
+IкВН - действующее значение периодической составляющей тока при трехфазном
+    КЗ у выводов обмотки высшего напряжения трансформатора, кА
+Iоткл.ном - номинальный ток отключения выключателя, установленного на стороне
+    высшего напряжения понижающего трансформатора
     """
-    return Xs
+    if switch == "IkVN" or switch == "Iotklnom":
+        return U_sr_NN**2 / (3**0.5 * Sk_IkVN_Xs_Iotklnom * U_sr_VN)
+    elif switch == "Sk":
+        return U_sr_NN / Sk_IkVN_Xs_Iotklnom * 10**-3
+    else:
+        return Sk_IkVN_Xs_Iotklnom
 
 
 def calc_Rt(Pk_nom, U_NN_nom, St_nom):
@@ -109,39 +129,56 @@ def calc_Ip0_3ph(R_1sum, X_1sum, U_sr_NN=400):
 U_sr_NN (Uср.НН) - среднее номинальное напряжение сети, в которой произошло
  короткое замыкание, В
     """
+#    R_1sum = calc_R_1sum(Rt=0,
+#                         Rr=0,
+#                         RtA=0,
+#                         Rkv=0,
+#                         Rsh=0,
+#                         Rk=0,
+#                         R_1kb=0,
+#                         Rvl=0,
+#                         Rd=0)
+#    X_1sum = calc_X_1sum(Xs=0,
+#                         Xt=0,
+#                         Xr=0,
+#                         XtA=0,
+#                         Xkv=0,
+#                         Xsh=0,
+#                         X_1kb=0,
+#                         Xvl=0)
     return U_sr_NN / (3**0.5 * (R_1sum ** 2 + X_1sum ** 2)**0.5)
 
 
-def calc_short_current(Xs,
-                       Pk_nom, U_NN_nom, St_nom, u_k,
-                       Pr_nom_delta, Ir_nom, f, L, M,
-                       RtA, XtA,
-                       Rkv, Xkv,
-                       Rsh, Xsh,
-                       Rk,
-                       R_1kb, X_1kb,
-                       Rvl, Xvl,
-                       Rd,
-                       U_sr_NN):
-    Xs = calc_Xs(Xs)
-    Rt = calc_Rt(Pk_nom, U_NN_nom, St_nom)
-    Xt = calc_Xt(Pk_nom, U_NN_nom, St_nom, u_k)
-    Rr = calc_Rr(Pr_nom_delta, Ir_nom)
-    Xr = calc_Xr(f, L, M)
-    RtA = RtA
-    XtA = XtA
-    Rkv = Rkv
-    Xkv = Xkv
-    Rsh = Rsh
-    Xsh = Xsh
-    Rk = Rk
-    R_1kb = R_1kb
-    X_1kb = X_1kb
-    Rvl = Rvl
-    Xvl = Xvl
-    Rd = Rd
-    R_1sum = calc_R_1sum(Rt, Rr, RtA, Rkv, Rsh, Rk, R_1kb, Rvl, Rd)
-    X_1sum = calc_X_1sum(Xs, Xt, Xr, XtA, Xkv, Xsh, X_1kb, Xvl)
+def calc_short_current(switch="Xs", Sk_IkVN_Xs_Iotklnom=50, U_sr_NN=0.4,
+                       U_sr_VN=10,
+                       Pk_nom=0, U_NN_nom=0.4, St_nom=0, u_k=0,
+                       Pr_nom_delta=0, Ir_nom=0, f=0, L=0, M=0,
+                       RtA=0, XtA=0,
+                       Rkv=0, Xkv=0,
+                       Rsh=0, Xsh=0,
+                       Rk=0,
+                       R_1kb=0, X_1kb=0,
+                       Rvl=0, Xvl=0,
+                       Rd=0):
+    Xs = calc_Xs(switch, Sk_IkVN_Xs_Iotklnom, U_sr_NN, U_sr_VN)
+#    Rt = calc_Rt(Pk_nom, U_NN_nom, St_nom)
+#    Xt = calc_Xt(Pk_nom, U_NN_nom, St_nom, u_k)
+#    Rr = calc_Rr(Pr_nom_delta, Ir_nom)
+#    Xr = calc_Xr(f, L, M)
+#    RtA = RtA
+#    XtA = XtA
+#    Rkv = Rkv
+#    Xkv = Xkv
+#    Rsh = Rsh
+#    Xsh = Xsh
+#    Rk = Rk
+#    R_1kb = R_1kb
+#    X_1kb = X_1kb
+#    Rvl = Rvl
+#    Xvl = Xvl
+#    Rd = Rd
+    R_1sum = calc_R_1sum(Rt=0, Rr=0, RtA=0, Rkv=0, Rsh=0, Rk=0, R_1kb=0, Rvl=0, Rd=0)
+    X_1sum = calc_X_1sum(Xs, Xt=0, Xr=0, XtA=0, Xkv=0, Xsh=0, X_1kb=0, Xvl=0)
     Ip0_3ph = calc_Ip0_3ph(R_1sum, X_1sum, U_sr_NN)
     return Ip0_3ph
 
