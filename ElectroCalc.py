@@ -6,7 +6,7 @@ from PyQt5 import QtWidgets
 # from PyQt5 import QtCore, QtGui
 # from PyQt5 import uic
 # from PyQt5.uic import loadUi
-from short_circuit_current_calculation import *
+from short_circuit_current_calculation import calc_Ip0_3ph
 
 
 class MyWin(QtWidgets.QMainWindow):
