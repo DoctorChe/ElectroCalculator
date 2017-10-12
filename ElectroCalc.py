@@ -9,15 +9,29 @@ from ui.ui_mainwindow import Ui_MainWindow
 # from PyQt5.uic import loadUi
 # from short_circuit_current_calculation import calc_Ip0_3ph
 # from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog
-from PyQt5 import QtCore
+from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox
+from PyQt5 import QtCore, QtSql, QtWidgets
 from PyQt5 import QtGui
 # from PyQt5.QtWidgets import QAction
 import short_circuit_current_calculation as sccc
 import dboperations
+import addcabledialog
+import dbwindow
 import math
 
 from appy.pod.renderer import Renderer
+
+rus = {
+    'transformer': {
+        'manufacturer': 'Завод изготовитель',
+        'model': 'Модель',
+        'nominal_voltage_HV': 'Номинальное напряжение ВН',
+        'nominal_voltage_LV': 'Номинальное напряжение НН',
+        'connection_windings': 'Схема соединения обмоток',
+        'full_rated_capacity': 'Полная номинальная мощность',
+        'short_circuit_loss': 'Потери короткого замыкания',
+        'impedance_voltage': 'Напряжение короткого замыкания', }
+}
 
 
 # class MyWin(QtWidgets.QMainWindow):
@@ -32,6 +46,7 @@ class MyWin(QMainWindow):
         QMainWindow.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        self.dbwindow = None
         # self.ui = loadUi('ui_mainwindow.ui', self)
         self.iniFile = iniFile
         self.settings = QtCore.QSettings(iniFile, QtCore.QSettings.IniFormat)
@@ -51,11 +66,15 @@ class MyWin(QMainWindow):
 
         # Событие - выход из программы
         self.ui.action_Exit.triggered.connect(self.close)
+        self.ui.action_About.triggered.connect(self.show_about_window)
+        self.ui.action_Qt.triggered.connect(self.show_aboutqt_window)
 
         self.ui.action_ODT.triggered.connect(self.save_report_odt)
 
-        self.ui.action_Open.triggered.connect(self.openFileNameDialog)
-        self.ui.action_Save.triggered.connect(self.saveFileDialog)
+        self.ui.action_Open.triggered.connect(self.open_file_dialog)
+        self.ui.action_Save.triggered.connect(self.save_file_dialog)
+
+        self.ui.action_db.triggered.connect(self.show_db_window)
 
         # Здесь прописываем событие нажатия на кнопку
         # self.ui.pushButton.clicked.connect(self.my_function)
@@ -430,6 +449,7 @@ class MyWin(QMainWindow):
                     1: "IkVN",
                     2: "Xs"
                 }.get(xc_mode, "Iotklnom")
+
             switch = switch_Xc(self.ui.comboBox_Sk_IkVN_Xs.currentIndex())
 
         # Считывание данных трансформатора
@@ -575,9 +595,12 @@ class MyWin(QMainWindow):
         # Заглушка для всех ошибок
         #            print('Это что ещё такое?')
         else:
-            [self.Ip0_3ph_max, self.Ip0_3ph_min, self.i_a0_3ph_max, self.i_a0_3ph_min, self.i_ud_3ph_max, self.i_ud_3ph_min,
-             self.Ip0_1ph_max, self.Ip0_1ph_min, self.i_a0_1ph_max, self.i_a0_1ph_min, self.i_ud_1ph_max, self.i_ud_1ph_min,
-             self.Ip0_2ph_max, self.Ip0_2ph_min, self.i_a0_2ph_max, self.i_a0_2ph_min, self.i_ud_2ph_max, self.i_ud_2ph_min] = sccc.calc_short_current(
+            [self.Ip0_3ph_max, self.Ip0_3ph_min, self.i_a0_3ph_max, self.i_a0_3ph_min, self.i_ud_3ph_max,
+             self.i_ud_3ph_min,
+             self.Ip0_1ph_max, self.Ip0_1ph_min, self.i_a0_1ph_max, self.i_a0_1ph_min, self.i_ud_1ph_max,
+             self.i_ud_1ph_min,
+             self.Ip0_2ph_max, self.Ip0_2ph_min, self.i_a0_2ph_max, self.i_a0_2ph_min, self.i_ud_2ph_max,
+             self.i_ud_2ph_min] = sccc.calc_short_current(
                 switch, Sk_IkVN_Xs_Iotklnom, U_sr_NN, U_sr_VN,  # Система
                 Pk_nom, U_NN_nom, St_nom, u_k, R0t, X0t,  # Трансформатор
                 Rpr, Xpr,  # Прочие элементы цепи, заданные одним значением
@@ -594,27 +617,27 @@ class MyWin(QMainWindow):
                 msg = "Исходные данные заданые не корректно. Сопротивление расчётного участка сети равно нулю."
                 self.statusBar().showMessage(msg)
             else:
-                self.ui.label_Ip0max_3ph.setText(str(round(self.Ip0_3ph_max, 2)))
-                self.ui.label_Ipomin_3ph.setText(str(round(self.Ip0_3ph_min, 2)))
-                self.ui.label_i_ud_max_3ph.setText(str(round(self.i_ud_3ph_max, 2)))
-                self.ui.label_i_ud_min_3ph.setText(str(round(self.i_ud_3ph_min, 2)))
-                self.ui.label_i_ao_max_3ph.setText(str(round(self.i_a0_3ph_max, 2)))
-                self.ui.label_i_ao_min_3ph.setText(str(round(self.i_a0_3ph_min, 2)))
-                self.ui.label_Ip0max_1ph.setText(str(round(self.Ip0_1ph_max, 2)))
-                self.ui.label_Ipomin_1ph.setText(str(round(self.Ip0_1ph_min, 2)))
-                self.ui.label_i_ud_max_1ph.setText(str(round(self.i_ud_1ph_max, 2)))
-                self.ui.label_i_ud_min_1ph.setText(str(round(self.i_ud_1ph_min, 2)))
-                self.ui.label_i_ao_max_1ph.setText(str(round(self.i_a0_1ph_max, 2)))
-                self.ui.label_i_ao_min_1ph.setText(str(round(self.i_a0_1ph_min, 2)))
-                self.ui.label_Ip0max_2ph.setText(str(round(self.Ip0_2ph_max, 2)))
-                self.ui.label_Ipomin_2ph.setText(str(round(self.Ip0_2ph_min, 2)))
-                self.ui.label_i_ud_max_2ph.setText(str(round(self.i_ud_2ph_max, 2)))
-                self.ui.label_i_ud_min_2ph.setText(str(round(self.i_ud_2ph_min, 2)))
-                self.ui.label_i_ao_max_2ph.setText(str(round(self.i_a0_2ph_max, 2)))
-                self.ui.label_i_ao_min_2ph.setText(str(round(self.i_a0_2ph_min, 2)))
+                self.ui.label_Ip0max_3ph.setText("{:.2f}".format(self.Ip0_3ph_max))
+                self.ui.label_Ipomin_3ph.setText("{:.2f}".format(self.Ip0_3ph_min))
+                self.ui.label_i_ud_max_3ph.setText("{:.2f}".format(self.i_ud_3ph_max))
+                self.ui.label_i_ud_min_3ph.setText("{:.2f}".format(self.i_ud_3ph_min))
+                self.ui.label_i_ao_max_3ph.setText("{:.2f}".format(self.i_a0_3ph_max))
+                self.ui.label_i_ao_min_3ph.setText("{:.2f}".format(self.i_a0_3ph_min))
+                self.ui.label_Ip0max_1ph.setText("{:.2f}".format(self.Ip0_1ph_max))
+                self.ui.label_Ipomin_1ph.setText("{:.2f}".format(self.Ip0_1ph_min))
+                self.ui.label_i_ud_max_1ph.setText("{:.2f}".format(self.i_ud_1ph_max))
+                self.ui.label_i_ud_min_1ph.setText("{:.2f}".format(self.i_ud_1ph_min))
+                self.ui.label_i_ao_max_1ph.setText("{:.2f}".format(self.i_a0_1ph_max))
+                self.ui.label_i_ao_min_1ph.setText("{:.2f}".format(self.i_a0_1ph_min))
+                self.ui.label_Ip0max_2ph.setText("{:.2f}".format(self.Ip0_2ph_max))
+                self.ui.label_Ipomin_2ph.setText("{:.2f}".format(self.Ip0_2ph_min))
+                self.ui.label_i_ud_max_2ph.setText("{:.2f}".format(self.i_ud_2ph_max))
+                self.ui.label_i_ud_min_2ph.setText("{:.2f}".format(self.i_ud_2ph_min))
+                self.ui.label_i_ao_max_2ph.setText("{:.2f}".format(self.i_a0_2ph_max))
+                self.ui.label_i_ao_min_2ph.setText("{:.2f}".format(self.i_a0_2ph_min))
         finally:
             # Выбирается вкладка "Результаты"
-            self.ui.tabWidget.setCurrentIndex(4)
+            self.ui.tabWidget.setCurrentWidget(self.ui.tab_results)
 
     def clear_results(self):
         """Очистка результатов вычислений"""
@@ -658,7 +681,8 @@ class MyWin(QMainWindow):
                             overwriteExisting=True)
         renderer.run()
 
-    def openFileNameDialog(self):
+    @QtCore.pyqtSlot()
+    def open_file_dialog(self):
         options = QFileDialog.Options()
         # options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self, "Считать данные из файла", "",
@@ -668,7 +692,8 @@ class MyWin(QMainWindow):
             self.settings.setIniCodec("utf-8")
             self.read_settings()
 
-    def saveFileDialog(self):
+    @QtCore.pyqtSlot()
+    def save_file_dialog(self):
         options = QFileDialog.Options()
         # options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getSaveFileName(self, "Сохранить файл с текущими данными", "",
@@ -678,6 +703,89 @@ class MyWin(QMainWindow):
             self.settings.setIniCodec("utf-8")
             self.save_settings()
 
+    @QtCore.pyqtSlot()
+    def show_about_window(self):
+        """Отображение окна сведений о программе"""
+        return QMessageBox.about(self, "О программе", "Описание программы")
+
+    @QtCore.pyqtSlot()
+    def show_aboutqt_window(self):
+        """Отображение окна сведений о библиотеке Qt"""
+        return QMessageBox.aboutQt(self)
+
+    @QtCore.pyqtSlot()
+    def show_db_window(self):
+        self.dbwindow = dbwindow.DBWindow()
+        self.dbwindow.show()
+
+    @QtCore.pyqtSlot()
+    def add_cable_from_db(self):
+        """Добавление кабеля из базы данных"""
+        self.addcabledialog = addcabledialog.AddCableDialog()
+        result = self.addcabledialog.exec_()
+        if result == QtWidgets.QDialog.Accepted:
+            linetype = self.addcabledialog.ui.comboBox_linetype.currentText()
+            material_of_cable = self.addcabledialog.ui.comboBox_material_of_cable_core.currentText()
+            size_of_cable_phase = self.addcabledialog.ui.comboBox_size_of_cable_phase.currentText()
+            size_of_cable_neutral = self.addcabledialog.ui.comboBox_size_of_cable_neutral.currentText()
+            resistance = dboperations.find_resistance(linetype, material_of_cable, size_of_cable_phase,
+                                                      size_of_cable_neutral)
+            linelength = self.addcabledialog.ui.doubleSpinBox_linelength.value()
+            parallel_fider = self.addcabledialog.ui.spinBox_parallel_fider.value()
+            r1 = float(resistance[0]) * linelength / parallel_fider
+            x1 = float(resistance[1]) * linelength / parallel_fider
+            r0 = float(resistance[2]) * linelength / parallel_fider
+            x0 = float(resistance[3]) * linelength / parallel_fider
+            self.ui.lineEdit_R_1kb.setText("{:.2f}".format(r1))
+            self.ui.lineEdit_X_1kb.setText("{:.2f}".format(x1))
+            self.ui.lineEdit_R_0kb.setText("{:.2f}".format(r0))
+            self.ui.lineEdit_X_0kb.setText("{:.2f}".format(x0))
+
+    @QtCore.pyqtSlot()
+    def add_aerial_line_from_db(self):
+        """Добавление кабеля из базы данных"""
+        self.addcabledialog = addcabledialog.AddCableDialog()
+        result = self.addcabledialog.exec_()
+        if result == QtWidgets.QDialog.Accepted:
+            linetype = self.addcabledialog.ui.comboBox_linetype.currentText()
+            material_of_cable = self.addcabledialog.ui.comboBox_material_of_cable_core.currentText()
+            size_of_cable_phase = self.addcabledialog.ui.comboBox_size_of_cable_phase.currentText()
+            size_of_cable_neutral = self.addcabledialog.ui.comboBox_size_of_cable_neutral.currentText()
+            resistance = dboperations.find_resistance(linetype, material_of_cable, size_of_cable_phase,
+                                                      size_of_cable_neutral)
+            linelength = self.addcabledialog.ui.doubleSpinBox_linelength.value()
+            parallel_fider = self.addcabledialog.ui.spinBox_parallel_fider.value()
+            r1 = float(resistance[0]) * linelength / parallel_fider
+            x1 = float(resistance[1]) * linelength / parallel_fider
+            r0 = float(resistance[2]) * linelength / parallel_fider
+            x0 = float(resistance[3]) * linelength / parallel_fider
+            self.ui.lineEdit_Rvl.setText("{:.2f}".format(r1))
+            self.ui.lineEdit_Xvl.setText("{:.2f}".format(x1))
+            self.ui.lineEdit_R0vl.setText("{:.2f}".format(r0))
+            self.ui.lineEdit_X0vl.setText("{:.2f}".format(x0))
+
+    @QtCore.pyqtSlot()
+    def add_busway_from_db(self):
+        """Добавление кабеля из базы данных"""
+        self.addcabledialog = addcabledialog.AddCableDialog()
+        result = self.addcabledialog.exec_()
+        if result == QtWidgets.QDialog.Accepted:
+            linetype = self.addcabledialog.ui.comboBox_linetype.currentText()
+            material_of_cable = self.addcabledialog.ui.comboBox_material_of_cable_core.currentText()
+            size_of_cable_phase = self.addcabledialog.ui.comboBox_size_of_cable_phase.currentText()
+            size_of_cable_neutral = self.addcabledialog.ui.comboBox_size_of_cable_neutral.currentText()
+            resistance = dboperations.find_resistance(linetype, material_of_cable, size_of_cable_phase,
+                                                      size_of_cable_neutral)
+            linelength = self.addcabledialog.ui.doubleSpinBox_linelength.value()
+            parallel_fider = self.addcabledialog.ui.spinBox_parallel_fider.value()
+            r1 = float(resistance[0]) * linelength / parallel_fider
+            x1 = float(resistance[1]) * linelength / parallel_fider
+            r0 = float(resistance[2]) * linelength / parallel_fider
+            x0 = float(resistance[3]) * linelength / parallel_fider
+            self.ui.lineEdit_Rsh.setText("{:.2f}".format(r1))
+            self.ui.lineEdit_Xsh.setText("{:.2f}".format(x1))
+            self.ui.lineEdit_R0sh.setText("{:.2f}".format(r0))
+            self.ui.lineEdit_X0sh.setText("{:.2f}".format(x0))
 
 
 class QRV(QtGui.QRegExpValidator):
@@ -689,7 +797,8 @@ class QRV(QtGui.QRegExpValidator):
         s = self.fixup(text) if res != QtGui.QValidator.Acceptable else s
         return res, s, i
 
-    def fixup(self, s):
+    @classmethod
+    def fixup(cls, s):
         s = s.replace(',', '.') if ',' in s else s
         return s
 
@@ -701,4 +810,15 @@ if __name__ == "__main__":
     myapp.show()
     sys.exit(app.exec_())
 
+# TODO Данные по умолчанию для сопротивлений прочих элементов цепи
+# TODO Расчёт сопротивления дуги
+# TODO Учёт влияния нагрева провода
+# TODO Учёт комплексной нагрузки
+# TODO Возможность задания нескольких участков кабеля
+# TODO Возможность проверки нескольких точек КЗ
+# TODO Расчёт сопротилвления нулевой последовательности тр-ра, если доступно, иначе ввод данных вручную
+# TODO Проверка аппарата защиты
+
+# TODO Добавление в базу данных (копирование, проверка на заполнение всех полей, проверка на наличие аналогичных
+# записей)
 # TODO QSystemTrayIcon (свернуть приложение в трей)

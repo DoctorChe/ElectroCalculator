@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DBWindow</class>
+ <widget class="QDialog" name="DBWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>832</width>
+    <height>409</height>
+   </rect>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
+  </property>
+  <property name="windowTitle">
+   <string>База данных</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Выберите необходимый тип оборудование из списка</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboBox_equipment"/>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTableView" name="tableView"/>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="text">
+        <string>Добавить</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="text">
+        <string>Копировать</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_3">
+       <property name="text">
+        <string>Редактировать</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButton_4">
+       <property name="text">
+        <string>Удалить</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item alignment="Qt::AlignRight">
+    <widget class="QPushButton" name="pushButton_close">
+     <property name="text">
+      <string>Закрыть</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>comboBox_equipment</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>DBWindow</receiver>
+   <slot>show_equipment_table()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>434</x>
+     <y>23</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>323</x>
+     <y>41</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>DBWindow</receiver>
+   <slot>db_add_equipment()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>132</x>
+     <y>345</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>127</x>
+     <y>385</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>DBWindow</receiver>
+   <slot>db_copy_equipment()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>311</x>
+     <y>345</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>303</x>
+     <y>382</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>DBWindow</receiver>
+   <slot>db_edit_equipment()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>434</x>
+     <y>347</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>451</x>
+     <y>383</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>DBWindow</receiver>
+   <slot>db_delete_equipment()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>645</x>
+     <y>345</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>660</x>
+     <y>336</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_close</sender>
+   <signal>clicked()</signal>
+   <receiver>DBWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>748</x>
+     <y>388</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>706</x>
+     <y>385</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>show_equipment_table()</slot>
+  <slot>db_add_equipment()</slot>
+  <slot>db_copy_equipment()</slot>
+  <slot>db_edit_equipment()</slot>
+  <slot>db_delete_equipment()</slot>
+ </slots>
+</ui>

@@ -17,6 +17,9 @@
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
      <widget class="QTabWidget" name="tabWidget">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
         <horstretch>0</horstretch>
@@ -30,7 +33,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>3</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -1467,197 +1470,44 @@
          </layout>
         </widget>
        </widget>
-       <widget class="QGroupBox" name="groupBox_14">
+       <widget class="QPushButton" name="pushButton">
         <property name="geometry">
          <rect>
           <x>410</x>
-          <y>20</y>
-          <width>381</width>
-          <height>101</height>
+          <y>240</y>
+          <width>281</width>
+          <height>26</height>
          </rect>
         </property>
-        <property name="title">
-         <string>GroupBox</string>
+        <property name="text">
+         <string>Добавить кабель из базы данных</string>
         </property>
-        <widget class="QLabel" name="label_11">
-         <property name="geometry">
-          <rect>
-           <x>230</x>
-           <y>20</y>
-           <width>101</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>длина линии</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_12">
-         <property name="geometry">
-          <rect>
-           <x>230</x>
-           <y>50</y>
-           <width>101</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>сечение кабеля</string>
-         </property>
-        </widget>
-        <widget class="QLineEdit" name="lineEdit_U_sr_NN_2">
-         <property name="geometry">
-          <rect>
-           <x>70</x>
-           <y>20</y>
-           <width>113</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-        </widget>
-        <widget class="QLineEdit" name="lineEdit_U_sr_NN_3">
-         <property name="geometry">
-          <rect>
-           <x>70</x>
-           <y>50</y>
-           <width>113</width>
-           <height>20</height>
-          </rect>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_15">
-         <property name="geometry">
-          <rect>
-           <x>230</x>
-           <y>80</y>
-           <width>151</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>материал жилы кабеля</string>
-         </property>
-        </widget>
-        <widget class="QComboBox" name="comboBox">
-         <property name="geometry">
-          <rect>
-           <x>70</x>
-           <y>80</y>
-           <width>111</width>
-           <height>22</height>
-          </rect>
-         </property>
-         <item>
-          <property name="text">
-           <string>Медь</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Алюминий</string>
-          </property>
-         </item>
-        </widget>
-        <widget class="QLabel" name="label_13">
-         <property name="geometry">
-          <rect>
-           <x>190</x>
-           <y>50</y>
-           <width>31</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>мм2</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_10">
-         <property name="geometry">
-          <rect>
-           <x>190</x>
-           <y>20</y>
-           <width>21</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>м</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_9">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>20</y>
-           <width>51</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>lк =</string>
-         </property>
-        </widget>
-        <widget class="QLabel" name="label_14">
-         <property name="geometry">
-          <rect>
-           <x>10</x>
-           <y>50</y>
-           <width>51</width>
-           <height>16</height>
-          </rect>
-         </property>
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Sк =</string>
-         </property>
-        </widget>
+       </widget>
+       <widget class="QPushButton" name="pushButton_2">
+        <property name="geometry">
+         <rect>
+          <x>410</x>
+          <y>30</y>
+          <width>281</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Добавить шинопровод из базы данных</string>
+        </property>
+       </widget>
+       <widget class="QPushButton" name="pushButton_3">
+        <property name="geometry">
+         <rect>
+          <x>410</x>
+          <y>450</y>
+          <width>281</width>
+          <height>26</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Добавить воздушную линию из базы данных</string>
+        </property>
        </widget>
       </widget>
       <widget class="QWidget" name="tab_3">
@@ -2278,12 +2128,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_4">
-       <attribute name="title">
-        <string>Аппарат защиты</string>
-       </attribute>
-      </widget>
-      <widget class="QWidget" name="tab_5">
+      <widget class="QWidget" name="tab_results">
        <attribute name="title">
         <string>Результаты</string>
        </attribute>
@@ -3297,14 +3142,22 @@
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
+     <string>Инструменты</string>
+    </property>
+    <addaction name="action_db"/>
+   </widget>
+   <widget class="QMenu" name="menu">
+    <property name="title">
      <string>Справка</string>
     </property>
     <addaction name="action_About"/>
+    <addaction name="action_Qt"/>
    </widget>
    <addaction name="menu_File"/>
    <addaction name="menu_Calculation"/>
    <addaction name="menu_Report"/>
    <addaction name="menu_Help"/>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="action_Calculate">
@@ -3312,9 +3165,9 @@
     <string>Запустить расчёт</string>
    </property>
   </action>
-  <action name="action_About">
+  <action name="action_db">
    <property name="text">
-    <string>О программе...</string>
+    <string>База данных</string>
    </property>
   </action>
   <action name="action_Open">
@@ -3335,6 +3188,16 @@
   <action name="action_ODT">
    <property name="text">
     <string>Сохранить отчёт как ODT</string>
+   </property>
+  </action>
+  <action name="action_About">
+   <property name="text">
+    <string>О программе</string>
+   </property>
+  </action>
+  <action name="action_Qt">
+   <property name="text">
+    <string>Версия Qt</string>
    </property>
   </action>
  </widget>
@@ -3654,6 +3517,54 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>add_cable_from_db()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>505</x>
+     <y>316</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>515</x>
+     <y>347</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>add_busway_from_db()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>502</x>
+     <y>118</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>142</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>add_aerial_line_from_db()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>554</x>
+     <y>531</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>566</x>
+     <y>555</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>on_clicked_comboBox_tr_regime(int)</slot>
@@ -3666,5 +3577,8 @@
   <slot>on_clicked_comboBox_tr_short_circuit_loss()</slot>
   <slot>checked_radioButton_tr_from_db()</slot>
   <slot>checked_radioButton_tr_manual()</slot>
+  <slot>add_cable_from_db()</slot>
+  <slot>add_busway_from_db()</slot>
+  <slot>add_aerial_line_from_db()</slot>
  </slots>
 </ui>

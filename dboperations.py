@@ -4,6 +4,7 @@
 """
 import sqlite3
 # import contextlib
+from PyQt5 import QtSql, QtCore
 
 
 # @contextlib.contextmanager
@@ -19,6 +20,7 @@ class DataConn:
     Класс Context Manager
     Создает связь с базой данных SQLite и закрывает её по окончанию работы
     """
+
     # def __init__(self, db_name):
     def __init__(self):
         """Конструктор"""
@@ -48,10 +50,18 @@ def create_table():
         with conn:
             cursor = conn.cursor()
 
-            # Создание таблицы
-            cursor.execute("""CREATE TABLE transformer
-                              (manufacturer text, model text, nominal_voltage_HV text, nominal_voltage_LV text,
-                              connection_windings text, full_rated_capacity text)
+            # # Создание таблицы "трансформатор"
+            # cursor.execute("""CREATE TABLE transformer
+            #                   (manufacturer text, model text, nominal_voltage_HV text, nominal_voltage_LV text,
+            #                   connection_windings text, full_rated_capacity text)
+            #                """)
+
+            # Создание таблицы "кабель"
+            cursor.execute("""CREATE TABLE cable
+                              (linetype TEXT, 
+                              material_of_cable_core TEXT, 
+                              size_of_cable_phase TEXT, size_of_cable_neutral TEXT, 
+                              R1 TEXT, x1 TEXT, R0 TEXT, x0 TEXT)
                            """)
 
 
@@ -61,10 +71,144 @@ def set_data_to_table():
         with conn:
             cursor = conn.cursor()
 
-            # Внесение данных в таблицу
-            cursor.execute("""INSERT INTO transformer
-                              VALUES ('ГОСТ', 'ТМ', '10', '400', 'Y/Yн-0', '160', '2.7', '5.5')
+            # # Внесение данных в таблицу "трансформатор"
+            # cursor.execute("""INSERT INTO transformer
+            #                   VALUES ('ГОСТ', 'ТМ', '10', '400', 'Y/Yн-0', '160', '2.7', '5.5')
+            #                   """)
+
+            # Внесение данных в таблицу "кабель"
+            cursor.execute("""INSERT INTO cable
+                              VALUES ('Кабель с алюминиевыми жилами в алюминиевой оболочке',
+                                      'Алюминий', 
+                                      '4', '-1', 
+                                      '9.61', '0.092', '10.95', '0.579')
                               """)
+
+
+def find_tables():
+    con = QtSql.QSqlDatabase.addDatabase('QSQLITE')
+    con.setDatabaseName("db/database.db")
+    con.open()
+    if con.isOpen():
+        tables = con.tables()
+    else:
+        tables = []
+        # s = "Возникла ошибка: " + con.lastError().text()
+    con.close()
+    # self.txtOutput.setText(s)
+
+    # with DataConn() as conn:
+    #     cursor = conn.cursor()
+    #     sql = "SELECT name FROM sqlite_temp_master WHERE type='table'"
+    #     cursor.execute(sql)
+    #     tables = [i[0] for i in cursor.fetchall()]
+    return tables
+
+
+def show_table(equipment):
+    con = QtSql.QSqlDatabase.addDatabase('QSQLITE')
+    con.setDatabaseName("db/database.db")
+    con.open()
+
+    model = QtSql.QSqlQueryModel(parent=None)
+    model.setQuery('select * from good order by goodname')
+    # model.setSort(1, QtCore.Qt.AscendingOrder)
+    # model.select()
+    model.setHeaderData(1, QtCore.Qt.Horizontal, 'Завод изготовитель')
+    model.setHeaderData(2, QtCore.Qt.Horizontal, 'Модель')
+    model.setHeaderData(3, QtCore.Qt.Horizontal, 'Номинальное напряжение ВН')
+    model.setHeaderData(4, QtCore.Qt.Horizontal, 'Номинальное напряжение НН')
+    model.setHeaderData(5, QtCore.Qt.Horizontal, 'Схема соединения обмоток')
+    model.setHeaderData(6, QtCore.Qt.Horizontal, 'Полная номинальная мощность')
+    model.setHeaderData(7, QtCore.Qt.Horizontal, 'Потери короткого замыкания')
+    model.setHeaderData(8, QtCore.Qt.Horizontal, 'Напряжение короткого замыкания')
+
+    # equipment_table = con.record("transformer")
+    # field_count = equipment_table.count()
+    # for field in range(0, field_count):
+    #     field_name = equipment_table.field(field).name()
+    #     # if field_name != "id":
+    #     #     self.cboSort.addItem(field_name)
+
+    model.setQuery("select * from transformer")
+
+    # stm = QtSql.QSqlRelationalTableModel()
+    # stm.setEditStrategy(QtSql.QSqlTableModel.OnManualSubmit)
+    # stm.setTable(equipment)
+    # # tables = con.tables()
+    # # table_count = len(tables)
+    # # if table_count > 0:
+    # #     stm.
+    # table = con.record(equipment)
+    # field_count = table.count()
+    # field_list = []
+    # for field_index in range(0, field_count):
+    #     field = table.field(field_index)
+    #     field_list.append(field)
+    #
+    # stm.setSort(1, QtCore.Qt.AscendingOrder)
+    # # stm.setRelation(3, QtSql.QSqlRelation('category', 'id', 'catname'))
+    # stm.setRelation(3, QtSql.QSqlRelation(field_list))
+    # stm.select()
+    # stm.setHeaderData(1, QtCore.Qt.Horizontal, 'Название')
+    # stm.setHeaderData(2, QtCore.Qt.Horizontal, 'Кол-во')
+    # stm.setHeaderData(3, QtCore.Qt.Horizontal, 'Категория')
+
+    con.close()
+
+
+def find_linetypes():
+    with DataConn() as conn:
+        cursor = conn.cursor()
+        sql = "SELECT linetype FROM cable"
+        cursor.execute(sql)
+        linetypes = [i[0] for i in cursor.fetchall()]
+    return set(linetypes)
+
+
+def find_material_of_cable_core(text):
+    with DataConn() as conn:
+        cursor = conn.cursor()
+        sql = "SELECT material_of_cable_core FROM cable WHERE linetype=?"
+        cursor.execute(sql, [text])
+        res = [i[0] for i in cursor.fetchall()]
+    return set(res)
+
+
+def find_size_of_cable_phase(*args):
+    with DataConn() as conn:
+        cursor = conn.cursor()
+        sql = "SELECT size_of_cable_phase FROM cable WHERE linetype=? AND material_of_cable_core=?"
+        cursor.execute(sql, args)
+        res = [i[0] for i in cursor.fetchall()]
+        if len(res) > 1:
+            res.sort()
+            res.sort(key=len)
+            # TODO Исправить сортировку (иногда не сортируются значения)
+    return set(res)
+
+
+def find_size_of_cable_neutral(*args):
+    with DataConn() as conn:
+        cursor = conn.cursor()
+        sql = "SELECT size_of_cable_neutral FROM cable " \
+              "WHERE linetype=? AND material_of_cable_core=? AND size_of_cable_phase=?"
+        cursor.execute(sql, args)
+        res = [i[0] for i in cursor.fetchall()]
+        if len(res) > 1:
+            res.sort()
+            res.sort(key=len)
+    return set(res)
+
+
+def find_resistance(*args):
+    with DataConn() as conn:
+        cursor = conn.cursor()
+        sql = "SELECT R1, X1, R0, X0 FROM cable " \
+              "WHERE linetype=? AND material_of_cable_core=? AND size_of_cable_phase=? AND size_of_cable_neutral=?"
+        cursor.execute(sql, args)
+        res = cursor.fetchone()
+    return res
 
 
 def find_manufacturers():
@@ -181,5 +325,6 @@ def find_impedance_voltage(*args):
 
 
 if __name__ == "__main__":
-    # set_data_to_table()
+    set_data_to_table()
+    # create_table()
     pass

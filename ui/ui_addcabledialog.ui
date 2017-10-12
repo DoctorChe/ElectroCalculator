@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AddCableDialog</class>
+ <widget class="QDialog" name="AddCableDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>649</width>
+    <height>392</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Диалог добавления линии</string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="2" colspan="2">
+    <widget class="QLineEdit" name="lineEdit"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Тип линии</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Длина линии, м</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="text">
+      <string>Сечение фазного проводника, мм²</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="2">
+    <widget class="QComboBox" name="comboBox_size_of_cable_phase"/>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="label_7">
+     <property name="text">
+      <string>Сечение нулевого проводника, мм²</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="2">
+    <widget class="QSpinBox" name="spinBox_temperature">
+     <property name="maximum">
+      <number>9999</number>
+     </property>
+     <property name="value">
+      <number>20</number>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2" colspan="2">
+    <widget class="QComboBox" name="comboBox_linetype"/>
+   </item>
+   <item row="2" column="2">
+    <widget class="QComboBox" name="comboBox_material_of_cable_core"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Материал жилы или марка шинопровода</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="2">
+    <widget class="QSpinBox" name="spinBox_parallel_fider">
+     <property name="minimum">
+      <number>1</number>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="2">
+    <widget class="QComboBox" name="comboBox_size_of_cable_neutral"/>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>Начальная температура проводника, °С</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="3">
+    <widget class="QToolButton" name="toolButton">
+     <property name="text">
+      <string>...</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="2" colspan="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Маркировка линии</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <widget class="QDoubleSpinBox" name="doubleSpinBox_linelength"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>Количество параллельных проводников, шт.</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>AddCableDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>532</x>
+     <y>359</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>380</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>AddCableDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>600</x>
+     <y>365</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>591</x>
+     <y>381</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_linetype</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>AddCableDialog</receiver>
+   <slot>on_clicked_comboBox_linetype()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>336</x>
+     <y>70</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>239</x>
+     <y>88</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_material_of_cable_core</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>AddCableDialog</receiver>
+   <slot>on_clicked_comboBox_material_of_cable_core()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>342</x>
+     <y>124</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>236</x>
+     <y>126</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>comboBox_size_of_cable_phase</sender>
+   <signal>currentTextChanged(QString)</signal>
+   <receiver>AddCableDialog</receiver>
+   <slot>on_clicked_comboBox_size_of_cable_phase()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>338</x>
+     <y>236</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>264</x>
+     <y>251</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>on_clicked_comboBox_linetype()</slot>
+  <slot>on_clicked_comboBox_material_of_cable_core()</slot>
+  <slot>on_clicked_comboBox_size_of_cable_phase()</slot>
+  <slot>on_clicked_comboBox_size_of_cable_neutral()</slot>
+ </slots>
+</ui>
