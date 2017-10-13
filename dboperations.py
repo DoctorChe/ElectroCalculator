@@ -289,24 +289,6 @@ def find_short_circuit_loss(manufacturer, model, nominal_voltage_HV, nominal_vol
     return short_circuit_loss
 
 
-# def find_impedance_voltage(manufacturer, model, nominal_voltage_HV, nominal_voltage_LV, connection_windings,
-#                             full_rated_capacity, short_circuit_loss):
-#     with DataConn() as conn:
-#         cursor = conn.cursor()
-#         sql = """SELECT impedance_voltage FROM transformer
-#                   WHERE manufacturer=? AND model=? AND nominal_voltage_HV=? AND 
-#                         nominal_voltage_LV=? AND connection_windings=? AND 
-#                         full_rated_capacity=? AND short_circuit_loss=?"""
-#         cursor.execute(sql, [manufacturer, model, nominal_voltage_HV, nominal_voltage_LV, connection_windings,
-#                              full_rated_capacity, short_circuit_loss])
-#         rows = cursor.fetchall()
-#         impedance_voltage = [i[0] for i in rows]
-
-#         if len(impedance_voltage) > 1:
-#             impedance_voltage.sort()
-#             impedance_voltage.sort(key=len)
-#     return impedance_voltage
-
 def find_impedance_voltage(*args):
     with DataConn() as conn:
         cursor = conn.cursor()
@@ -325,6 +307,6 @@ def find_impedance_voltage(*args):
 
 
 if __name__ == "__main__":
-    set_data_to_table()
+    # set_data_to_table()
     # create_table()
     pass

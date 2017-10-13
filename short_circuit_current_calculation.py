@@ -209,26 +209,26 @@ x 1 = xс + xт + xр + xТА + xкв + xш + x1кб + x1вл
 
 def calc_short_current(switch="Xs", Sk_IkVN_Xs_Iotklnom=50, U_sr_NN=0.4,
                        U_sr_VN=10,
-                       Pk_nom=0, U_NN_nom=0.4, St_nom=0, u_k=0, R0t=0, X0t=0,
+                       r_t=0, x_t=0, r_0t=0, x_0t=0,
                        r_pr=0, x_pr=0,
                        # Pr_nom_delta=0, Ir_nom=0, f=0, L=0, M=0,
-                       Rr=0, x_r=0,
+                       r_r=0, x_r=0,
                        r_ta=0, x_ta=0,
                        r_kv=0, x_kv=0,
                        r_sh=0, x_sh=0, r_0sh=0, x_0sh=0,
                        r_k=0,
                        r_1kb=0, x_1kb=0, r_0kb=0, x_0kb=0,
                        r_vl=0, x_vl=0, r_0vl=0, x_0vl=0,
-                       Rd=0):
+                       r_d=0):
     x_s = calc_Xs(switch, Sk_IkVN_Xs_Iotklnom, U_sr_NN, U_sr_VN)
     print("Хс = ", x_s)
 
-    Rt = calc_Rt(Pk_nom, U_NN_nom, St_nom)
-    Xt = calc_Xt(Pk_nom, U_NN_nom, St_nom, u_k)
-    print("Rт = ", Rt)
-    print("Xт = ", Xt)
+    # r_t = calc_Rt(Pk_nom, U_NN_nom, St_nom)
+    # x_t = calc_Xt(Pk_nom, U_NN_nom, St_nom, u_k)
+    # print("Rт = ", r_t)
+    # print("Xт = ", x_t)
     #
-    # print("Rр = ", Rr)
+    # print("Rр = ", r_r)
     # print("Xр = ", x_r)
     #
     # print("Rта = ", r_ta)
@@ -248,9 +248,9 @@ def calc_short_current(switch="Xs", Sk_IkVN_Xs_Iotklnom=50, U_sr_NN=0.4,
     # print("Rвл = ", r_vl)
     # print("Xвл = ", x_vl)
     #
-    # print("Rд = ", Rd)
+    # print("Rд = ", r_d)
 
-    #    Rr = calc_Rr(Pr_nom_delta, Ir_nom)
+    #    r_r = calc_Rr(Pr_nom_delta, Ir_nom)
     #    x_r = calc_Xr(f, L, M)
 
     #    r_ta = r_ta
@@ -270,12 +270,12 @@ def calc_short_current(switch="Xs", Sk_IkVN_Xs_Iotklnom=50, U_sr_NN=0.4,
     #    r_vl = r_vl
     #    x_vl = x_vl
 
-    #    Rd = Rd
+    #    r_d = r_d
 
     # Расчёт тока трёхфазного КЗ
-    r_1sum_3ph_max = calc_r_sum(Rt, r_pr, Rr, r_ta, r_kv, r_sh, r_k, r_1kb, r_vl)
-    r_1sum_3ph_min = calc_r_sum(Rt, r_pr, Rr, r_ta, r_kv, r_sh, r_k, r_1kb, r_vl, Rd)
-    x_1sum_3ph = calc_x_sum(x_s, Xt, x_pr, x_r, x_ta, x_kv, x_sh, x_1kb, x_vl)
+    r_1sum_3ph_max = calc_r_sum(r_t, r_pr, r_r, r_ta, r_kv, r_sh, r_k, r_1kb, r_vl)
+    r_1sum_3ph_min = calc_r_sum(r_t, r_pr, r_r, r_ta, r_kv, r_sh, r_k, r_1kb, r_vl, r_d)
+    x_1sum_3ph = calc_x_sum(x_s, x_t, x_pr, x_r, x_ta, x_kv, x_sh, x_1kb, x_vl)
 
     print("R1 3ф max = ", r_1sum_3ph_max)
     print("R1 3ф min = ", r_1sum_3ph_min)
@@ -300,8 +300,8 @@ def calc_short_current(switch="Xs", Sk_IkVN_Xs_Iotklnom=50, U_sr_NN=0.4,
     r_1sum_1ph_max = r_1sum_3ph_max
     r_1sum_1ph_min = r_1sum_3ph_min
     x_1sum_1ph = x_1sum_3ph
-    r_0sum_1ph = calc_r_sum(R0t, r_pr, Rr, r_ta, r_kv, r_0sh, r_k, r_0kb, r_0vl, Rd)
-    x_0sum_1ph = calc_x_sum(X0t, x_pr, x_r, x_ta, x_kv, x_0sh, x_0kb, x_0vl)
+    r_0sum_1ph = calc_r_sum(r_0t, r_pr, r_r, r_ta, r_kv, r_0sh, r_k, r_0kb, r_0vl, r_d)
+    x_0sum_1ph = calc_x_sum(x_0t, x_pr, x_r, x_ta, x_kv, x_0sh, x_0kb, x_0vl)
 
     print("R0 1ф = ", r_0sum_1ph)
     print("X0 1ф= ", x_0sum_1ph)
@@ -318,9 +318,9 @@ def calc_short_current(switch="Xs", Sk_IkVN_Xs_Iotklnom=50, U_sr_NN=0.4,
     i_ud_1ph_min = Kud_1ph_min * i_a0_1ph_min
 
     # Расчёт тока двухфазного КЗ
-    R_1sum_2ph_max = calc_r_sum(Rt, r_pr, Rr, r_ta, r_kv, r_sh, r_k, r_1kb, r_vl)
-    R_1sum_2ph_min = calc_r_sum(Rt, r_pr, Rr, r_ta, r_kv, r_sh, r_k, r_1kb, r_vl, Rd / 2)
-    X_1sum_2ph = calc_x_sum(x_s, Xt, x_pr, x_r, x_ta, x_kv, x_sh, x_1kb, x_vl)
+    R_1sum_2ph_max = calc_r_sum(r_t, r_pr, r_r, r_ta, r_kv, r_sh, r_k, r_1kb, r_vl)
+    R_1sum_2ph_min = calc_r_sum(r_t, r_pr, r_r, r_ta, r_kv, r_sh, r_k, r_1kb, r_vl, r_d / 2)
+    X_1sum_2ph = calc_x_sum(x_s, x_t, x_pr, x_r, x_ta, x_kv, x_sh, x_1kb, x_vl)
 
     print("R1 2ф min = ", r_1sum_3ph_min)
 

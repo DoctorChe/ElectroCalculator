@@ -10,7 +10,7 @@ from ui.ui_mainwindow import Ui_MainWindow
 # from short_circuit_current_calculation import calc_Ip0_3ph
 # from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox
-from PyQt5 import QtCore, QtSql, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 from PyQt5 import QtGui
 # from PyQt5.QtWidgets import QAction
 import short_circuit_current_calculation as sccc
@@ -32,6 +32,8 @@ rus = {
         'short_circuit_loss': 'Потери короткого замыкания',
         'impedance_voltage': 'Напряжение короткого замыкания', }
 }
+
+tr_connection_windings_list = ["Y/Yн-0", "Yн/Y-0", "Y/Δ-11", "Yн/Δ-11", "Y/Zн-11", "Δ/Yн-11", "Δ/Δ-0", "1/1н"]
 
 
 # class MyWin(QtWidgets.QMainWindow):
@@ -247,6 +249,45 @@ class MyWin(QMainWindow):
         self.ui.comboBox_tr_impedance_voltage.clear()
         self.ui.comboBox_tr_impedance_voltage.insertItems(0, impedance_voltage)
 
+    def calc_tr_data(self):
+        # Считывание данных трансформатора
+        try:
+            # Параметры трансформатора
+            St_nom = 1
+            U_NN_nom = 0
+            Pk_nom = 0
+            u_k = 0
+            R0t = 0
+            X0t = 0
+            St_nom = float(self.ui.comboBox_tr_full_rated_capacity.currentText())
+            U_NN_nom = float(self.ui.comboBox_U_sr_NN.currentText())
+            Pk_nom = float(self.ui.comboBox_tr_short_circuit_loss.currentText())
+            u_k = float(self.ui.comboBox_tr_impedance_voltage.currentText())
+            # R0t = float(self.ui.lineEdit_R0t.text())
+            # X0t = float(self.ui.lineEdit_X0t.text())
+        except ValueError:
+            msg = ("Исходные данные трансформатора введены не корректно. " +
+                   "Сопротивление трансформатора в расчётах не учитывается.")
+            self.statusBar().showMessage(msg)
+        else:
+            # Pk_nom, U_NN_nom, St_nom, u_k, R0t, X0t,  # Трансформатор
+            R1t = sccc.calc_Rt(Pk_nom, U_NN_nom, St_nom)
+            X1t = sccc.calc_Xt(Pk_nom, U_NN_nom, St_nom, u_k)
+            self.ui.lineEdit_Rt.setText("{:.2f}".format(R1t))
+            self.ui.lineEdit_Xt.setText("{:.2f}".format(X1t))
+            if self.ui.comboBox_tr_connection_windings.currentText() == "Δ/Yн-11":
+                R0t = R1t
+                X0t = X1t
+                self.ui.lineEdit_R0t.setText("{:.2f}".format(R0t))
+                self.ui.lineEdit_X0t.setText("{:.2f}".format(X0t))
+                msg = "Расчетные данные трансформатора вычислены успешно."
+                self.statusBar().showMessage(msg)
+            else:
+                self.ui.lineEdit_R0t.setText("")
+                self.ui.lineEdit_X0t.setText("")
+                msg = "Введите сопротивление нулевой последовательности трансформатора вручную."
+                self.statusBar().showMessage(msg)
+
     def checked_radioButton_tr_from_db(self):
         self.ui.comboBox_tr_manufacturer.blockSignals(False)
         self.ui.comboBox_tr_model.blockSignals(False)
@@ -277,7 +318,9 @@ class MyWin(QMainWindow):
         self.ui.comboBox_tr_short_circuit_loss.blockSignals(True)
         self.ui.comboBox_U_sr_VN.clear()
         self.ui.comboBox_U_sr_NN.clear()
-        # self.ui.comboBox_tr_connection_windings.clear()
+        self.ui.comboBox_tr_connection_windings.clear()
+        self.ui.comboBox_tr_connection_windings.insertItems(0, ("", ))
+        self.ui.comboBox_tr_connection_windings.insertItems(1, tr_connection_windings_list)
         self.ui.comboBox_tr_full_rated_capacity.clear()
         self.ui.comboBox_tr_impedance_voltage.clear()
         self.ui.comboBox_tr_short_circuit_loss.clear()
@@ -410,12 +453,6 @@ class MyWin(QMainWindow):
         self.settings.setValue('Rd', self.ui.lineEdit_Rd.text())
         self.settings.endGroup()
 
-    #        self.layoutSettings.sync()
-
-    #    def loadIni(self, iniFile):
-    #        ini = QSettings(iniFile, QSettings.IniFormat)
-    #        ini.setIniCodec("utf-8")
-
     # @property
     def my_function(self):
         """
@@ -455,16 +492,12 @@ class MyWin(QMainWindow):
         # Считывание данных трансформатора
         try:
             # Параметры трансформатора
-            St_nom = 1
-            U_NN_nom = 0
-            Pk_nom = 0
-            u_k = 0
+            Rt = 0
+            Xt = 0
             R0t = 0
             X0t = 0
-            St_nom = float(self.ui.comboBox_tr_full_rated_capacity.currentText())
-            U_NN_nom = float(self.ui.comboBox_U_sr_NN.currentText())
-            Pk_nom = float(self.ui.comboBox_tr_short_circuit_loss.currentText())
-            u_k = float(self.ui.comboBox_tr_impedance_voltage.currentText())
+            Rt = float(self.ui.lineEdit_Rt.text())
+            Xt = float(self.ui.lineEdit_Xt.text())
             R0t = float(self.ui.lineEdit_R0t.text())
             X0t = float(self.ui.lineEdit_X0t.text())
         except ValueError:
@@ -602,7 +635,7 @@ class MyWin(QMainWindow):
              self.Ip0_2ph_max, self.Ip0_2ph_min, self.i_a0_2ph_max, self.i_a0_2ph_min, self.i_ud_2ph_max,
              self.i_ud_2ph_min] = sccc.calc_short_current(
                 switch, Sk_IkVN_Xs_Iotklnom, U_sr_NN, U_sr_VN,  # Система
-                Pk_nom, U_NN_nom, St_nom, u_k, R0t, X0t,  # Трансформатор
+                Rt, Xt, R0t, X0t,  # Трансформатор
                 Rpr, Xpr,  # Прочие элементы цепи, заданные одним значением
                 # Pr_nom_delta=0, Ir_nom=0, f=0, L=0, M=0,  # Реактор
                 Rr, Xr,  # Реактор
@@ -816,7 +849,6 @@ if __name__ == "__main__":
 # TODO Учёт комплексной нагрузки
 # TODO Возможность задания нескольких участков кабеля
 # TODO Возможность проверки нескольких точек КЗ
-# TODO Расчёт сопротилвления нулевой последовательности тр-ра, если доступно, иначе ввод данных вручную
 # TODO Проверка аппарата защиты
 
 # TODO Добавление в базу данных (копирование, проверка на заполнение всех полей, проверка на наличие аналогичных
