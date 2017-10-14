@@ -16,8 +16,16 @@ rus = {
         'connection_windings': 'Схема соединения обмоток',
         'full_rated_capacity': 'Полная номинальная мощность',
         'short_circuit_loss': 'Потери короткого замыкания',
-        'impedance_voltage': 'Напряжение короткого замыкания', }
-    # TODO Добавить поля для таблицы cable
+        'impedance_voltage': 'Напряжение короткого замыкания', },
+    'cable': {
+        'linetype': 'Тип линии',
+        'material_of_cable_core': 'Материал жилы кабеля',
+        'size_of_cable_phase': 'Сечение фазного проводника, мм2',
+        'size_of_cable_neutral': 'Сечение нейтрального проводника, мм2',
+        'R1': 'R1',
+        'x1': 'X1',
+        'R0': 'R0',
+        'x0': 'X0', }
 }
 
 class DBWindow(QtWidgets.QDialog):

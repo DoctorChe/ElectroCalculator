@@ -5,14 +5,9 @@
 import sys
 # Импортируем наш интерфейс из файла
 from ui.ui_mainwindow import Ui_MainWindow
-# from PyQt5 import uic
-# from PyQt5.uic import loadUi
-# from short_circuit_current_calculation import calc_Ip0_3ph
-# from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QApplication, QFileDialog, QMessageBox, QMainWindow
 from PyQt5 import QtCore, QtWidgets
 from PyQt5 import QtGui
-# from PyQt5.QtWidgets import QAction
 import short_circuit_current_calculation as sccc
 import dboperations
 import addcabledialog
@@ -24,20 +19,13 @@ from appy.pod.renderer import Renderer
 tr_connection_windings_list = ["Y/Yн-0", "Yн/Y-0", "Y/Δ-11", "Yн/Δ-11", "Y/Zн-11", "Δ/Yн-11", "Δ/Δ-0", "1/1н"]
 
 
-# class MyWin(QtWidgets.QMainWindow):
-class MyWin(QMainWindow):
-    """
-    Основной класс программы
-    """
-
+class MainWindow(QMainWindow):
+    """Основной класс программы"""
     def __init__(self, iniFile, parent=None):
-        # QtWidgets.QWidget.__init__(self, parent)
-        # QWidget.__init__(self, parent)
         QMainWindow.__init__(self, parent)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.dbwindow = None
-        # self.ui = loadUi('ui_mainwindow.ui', self)
         self.iniFile = iniFile
         self.settings = QtCore.QSettings(iniFile, QtCore.QSettings.IniFormat)
         self.settings.setIniCodec("utf-8")
@@ -52,7 +40,7 @@ class MyWin(QMainWindow):
         self.read_settings()
 
         # Событие - запуск вычисления
-        self.ui.action_Calculate.triggered.connect(self.my_function)
+        self.ui.action_Calculate.triggered.connect(self.start_calculation)
 
         # Событие - выход из программы
         self.ui.action_Exit.triggered.connect(self.close)
@@ -67,18 +55,9 @@ class MyWin(QMainWindow):
         self.ui.action_db.triggered.connect(self.show_db_window)
 
         # Здесь прописываем событие нажатия на кнопку
-        # self.ui.pushButton.clicked.connect(self.my_function)
-
-        # self.ui.pushButton.clicked.connect(self.ui.action_Exit)
-        # self.ui.pushButton.addAction(self.ui.action_Exit)
+        # self.ui.pushButton.clicked.connect(self.start_calculation)
 
         # self.ui.lineEdit.setValidator(QtGui.QDoubleValidator(0.99, 99.99, 2))
-
-        # Событие - выбор параметра режима тр-ра
-        # self.ui.comboBox_tr_regime.currentIndexChanged.connect(self.on_clicked_comboBox_tr_regime)
-        # self.ui.comboBox_tr_regime_value.hide()
-        # self.ui.comboBox_tr_regime_value.setCurrentIndex(2)
-        #        self.ui.comboBox_tr_regime.activated.connect(self.on_clicked_comboBox_tr_regime)
 
         # self.ui.comboBox_tr_manufacturer.activated[str].connect(self.on_clicked_comboBox_tr_manufacturer)
 
@@ -119,9 +98,7 @@ class MyWin(QMainWindow):
 
     @QtCore.pyqtSlot(int)
     def on_clicked_comboBox_tr_regime(self, index):
-        """
-        Переключение режима трасформатора
-        """
+        """Переключение режима трасформатора"""
         if not index:
             self.ui.comboBox_tr_regime_value.hide()
             self.ui.lineEdit_tr_regime_value.show()
@@ -322,7 +299,7 @@ class MyWin(QMainWindow):
     def closeEvent(self, e):  # pylint: disable=invalid-name
         """Обработка события закрытия программы"""
         # Write data to config file
-        # if not self.iniFile == "last_values.ini":
+        # if self.iniFile != "last_values.ini":
         #     self.iniFile = "last_values.ini"
         self.settings = QtCore.QSettings(self.iniFile, QtCore.QSettings.IniFormat)
         self.settings.setIniCodec("utf-8")
@@ -331,16 +308,6 @@ class MyWin(QMainWindow):
 
     def read_settings(self):
         """Чтение настроек"""
-        #        self.inputs = {}
-        #        self.params = []
-        #        ini.beginGroup("Common")
-        #        wt = ini.value('Title','')
-        #        if wt != '': self.setWindowTitle(wt)
-        #        ini.endGroup()
-
-        #        chBoxState = settings.value('chBoxState', QtCore.Qt.Checked)
-        #        self.chB.setCheckState(int(chBoxState))
-
         self.settings.beginGroup("Transformer")
         check_state = self.settings.value("tr_from_db", False, type=bool)
         self.ui.radioButton_tr_from_db.setChecked(check_state)
@@ -446,11 +413,8 @@ class MyWin(QMainWindow):
         self.settings.endGroup()
 
     # @property
-    def my_function(self):
-        """
-        Основная функция программы
-        """
-
+    def start_calculation(self):
+        """Основная функция программы"""
         # Очистить данные предыдущих вычислений
         self.clear_results()
 
@@ -460,6 +424,7 @@ class MyWin(QMainWindow):
             U_sr_VN = 1
             U_sr_NN = 0
             switch = "Xs"
+            x_s = 0
             Sk_IkVN_Xs_Iotklnom = 0
             U_sr_VN = float(self.ui.comboBox_U_sr_VN.currentText())
             U_sr_NN = float(self.ui.comboBox_U_sr_NN.currentText())
@@ -480,6 +445,8 @@ class MyWin(QMainWindow):
                 }.get(xc_mode, "Iotklnom")
 
             switch = switch_Xc(self.ui.comboBox_Sk_IkVN_Xs.currentIndex())
+            # Вычисление эквивалентного индуктивного сопротивления системы
+            x_s = sccc.calc_Xs(switch, Sk_IkVN_Xs_Iotklnom, U_sr_NN, U_sr_VN)
 
         # Считывание данных трансформатора
         try:
@@ -626,7 +593,8 @@ class MyWin(QMainWindow):
              self.i_ud_1ph_min,
              self.Ip0_2ph_max, self.Ip0_2ph_min, self.i_a0_2ph_max, self.i_a0_2ph_min, self.i_ud_2ph_max,
              self.i_ud_2ph_min] = sccc.calc_short_current(
-                switch, Sk_IkVN_Xs_Iotklnom, U_sr_NN, U_sr_VN,  # Система
+                U_sr_NN,
+                x_s,  # Система
                 Rt, Xt, R0t, X0t,  # Трансформатор
                 Rpr, Xpr,  # Прочие элементы цепи, заданные одним значением
                 # Pr_nom_delta=0, Ir_nom=0, f=0, L=0, M=0,  # Реактор
@@ -833,7 +801,7 @@ class QRV(QtGui.QRegExpValidator):
 if __name__ == "__main__":
     # QApplication.setDesktopSettingsAware(False)
     app = QApplication(sys.argv)  # pylint: disable=invalid-name
-    myapp = MyWin("last_values.ini")
+    myapp = MainWindow("last_values.ini")
     myapp.show()
     sys.exit(app.exec_())
 
@@ -845,7 +813,4 @@ if __name__ == "__main__":
 # TODO Возможность задания нескольких участков кабеля
 # TODO Возможность проверки нескольких точек КЗ
 # TODO Проверка аппарата защиты
-
-# TODO Добавление в базу данных (копирование, проверка на заполнение всех полей, проверка на наличие аналогичных
-# записей)
 # TODO QSystemTrayIcon (свернуть приложение в трей)

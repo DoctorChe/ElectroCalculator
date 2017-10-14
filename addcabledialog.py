@@ -54,5 +54,36 @@ class AddCableDialog(QtWidgets.QDialog):
         self.ui.comboBox_size_of_cable_neutral.clear()
         self.ui.comboBox_size_of_cable_neutral.insertItems(0, size_of_cable_neutral)
 
-# TODO Сделать проверку на введение всех данных перед нажатием кнопки OK
+    def accept(self):
+        if self.ui.comboBox_linetype.currentText() == "":
+            QtWidgets.QMessageBox.information(self, "Предупреждение",
+                                              "Не задан тип линии",
+                                              buttons=QtWidgets.QMessageBox.Close,
+                                              defaultButton=QtWidgets.QMessageBox.Close)
+        elif self.ui.comboBox_material_of_cable_core.currentText() == "":
+            QtWidgets.QMessageBox.information(self, "Предупреждение",
+                                              "Не задан материал жилы или марка шинопровода",
+                                              buttons=QtWidgets.QMessageBox.Close,
+                                              defaultButton=QtWidgets.QMessageBox.Close)
+        elif self.ui.doubleSpinBox_linelength.value() == 0:
+            QtWidgets.QMessageBox.information(self, "Предупреждение",
+                                              "Заданная длина линии равна 0 м",
+                                              buttons=QtWidgets.QMessageBox.Close,
+                                              defaultButton=QtWidgets.QMessageBox.Close)
+        elif self.ui.comboBox_size_of_cable_phase.currentText() == "":
+            QtWidgets.QMessageBox.information(self, "Предупреждение",
+                                              "Не задано сечение фазного проводника",
+                                              buttons=QtWidgets.QMessageBox.Close,
+                                              defaultButton=QtWidgets.QMessageBox.Close)
+        elif self.ui.comboBox_size_of_cable_phase.currentText() == "":
+            QtWidgets.QMessageBox.information(self, "Предупреждение",
+                                              "Не задано сечение нулевого проводника",
+                                              buttons=QtWidgets.QMessageBox.Close,
+                                              defaultButton=QtWidgets.QMessageBox.Close)
+        else:
+            super().accept()
+
 # TODO Расчёт начальной температуры кабеля
+# TODO Добавление в базу данных - добавить возможность копирования записи с последующим редактированием
+# TODO Добавление в базу данных - проверка на заполнение всех полей перед добавлением
+# TODO Добавление в базу данных - проверка на наличие аналогичных записей перед добавлением

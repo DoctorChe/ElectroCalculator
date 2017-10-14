@@ -207,11 +207,10 @@ x 1 = xс + xт + xр + xТА + xкв + xш + x1кб + x1вл
     return U_sr_NN / (2 * math.sqrt(r_1sum ** 2 + x_1sum ** 2))
 
 
-def calc_short_current(switch="Xs", Sk_IkVN_Xs_Iotklnom=50, U_sr_NN=0.4,
-                       U_sr_VN=10,
+def calc_short_current(U_sr_NN=0.4,
+                       x_s=0,
                        r_t=0, x_t=0, r_0t=0, x_0t=0,
                        r_pr=0, x_pr=0,
-                       # Pr_nom_delta=0, Ir_nom=0, f=0, L=0, M=0,
                        r_r=0, x_r=0,
                        r_ta=0, x_ta=0,
                        r_kv=0, x_kv=0,
@@ -220,70 +219,10 @@ def calc_short_current(switch="Xs", Sk_IkVN_Xs_Iotklnom=50, U_sr_NN=0.4,
                        r_1kb=0, x_1kb=0, r_0kb=0, x_0kb=0,
                        r_vl=0, x_vl=0, r_0vl=0, x_0vl=0,
                        r_d=0):
-    x_s = calc_Xs(switch, Sk_IkVN_Xs_Iotklnom, U_sr_NN, U_sr_VN)
-    print("Хс = ", x_s)
-
-    # r_t = calc_Rt(Pk_nom, U_NN_nom, St_nom)
-    # x_t = calc_Xt(Pk_nom, U_NN_nom, St_nom, u_k)
-    # print("Rт = ", r_t)
-    # print("Xт = ", x_t)
-    #
-    # print("Rр = ", r_r)
-    # print("Xр = ", x_r)
-    #
-    # print("Rта = ", r_ta)
-    # print("Xта = ", x_ta)
-    #
-    # print("Rкв = ", r_kv)
-    # print("Xкв = ", x_kv)
-    #
-    # print("Rш = ", r_sh)
-    # print("Xш = ", x_sh)
-    #
-    # print("Rк = ", r_k)
-    #
-    # print("R1кб = ", r_1kb)
-    # print("X1кб = ", x_1kb)
-    #
-    # print("Rвл = ", r_vl)
-    # print("Xвл = ", x_vl)
-    #
-    # print("Rд = ", r_d)
-
-    #    r_r = calc_Rr(Pr_nom_delta, Ir_nom)
-    #    x_r = calc_Xr(f, L, M)
-
-    #    r_ta = r_ta
-    #    x_ta = x_ta
-
-    #    r_kv = r_kv
-    #    x_kv = x_kv
-
-    #    r_sh = r_sh
-    #    x_sh = x_sh
-
-    #    r_k = r_k
-
-    #    r_1kb = r_1kb
-    #    x_1kb = x_1kb
-
-    #    r_vl = r_vl
-    #    x_vl = x_vl
-
-    #    r_d = r_d
-
     # Расчёт тока трёхфазного КЗ
     r_1sum_3ph_max = calc_r_sum(r_t, r_pr, r_r, r_ta, r_kv, r_sh, r_k, r_1kb, r_vl)
     r_1sum_3ph_min = calc_r_sum(r_t, r_pr, r_r, r_ta, r_kv, r_sh, r_k, r_1kb, r_vl, r_d)
     x_1sum_3ph = calc_x_sum(x_s, x_t, x_pr, x_r, x_ta, x_kv, x_sh, x_1kb, x_vl)
-
-    print("R1 3ф max = ", r_1sum_3ph_max)
-    print("R1 3ф min = ", r_1sum_3ph_min)
-    print("X1 3ф = ", x_1sum_3ph)
-    # print("R1 max/X1 = ", R_1sum_max/X_1sum)
-    # print("R1 min/X1 = ", R_1sum_min/X_1sum)
-    # print("X1/R1 max = ", X_1sum/R_1sum_max)
-    # print("X1/R1 min = ", X_1sum/R_1sum_min)
 
     Ip0_3ph_max = calc_Ip0_3ph(r_1sum_3ph_max, x_1sum_3ph, U_sr_NN)
     Ip0_3ph_min = calc_Ip0_3ph(r_1sum_3ph_min, x_1sum_3ph, U_sr_NN)
@@ -303,9 +242,6 @@ def calc_short_current(switch="Xs", Sk_IkVN_Xs_Iotklnom=50, U_sr_NN=0.4,
     r_0sum_1ph = calc_r_sum(r_0t, r_pr, r_r, r_ta, r_kv, r_0sh, r_k, r_0kb, r_0vl, r_d)
     x_0sum_1ph = calc_x_sum(x_0t, x_pr, x_r, x_ta, x_kv, x_0sh, x_0kb, x_0vl)
 
-    print("R0 1ф = ", r_0sum_1ph)
-    print("X0 1ф= ", x_0sum_1ph)
-
     Ip0_1ph_max = calc_Ip0_1ph(r_1sum_1ph_max, x_1sum_1ph, r_0sum_1ph, x_0sum_1ph, U_sr_NN)
     Ip0_1ph_min = calc_Ip0_1ph(r_1sum_1ph_min, x_1sum_1ph, r_0sum_1ph, x_0sum_1ph, U_sr_NN)
 
@@ -322,8 +258,6 @@ def calc_short_current(switch="Xs", Sk_IkVN_Xs_Iotklnom=50, U_sr_NN=0.4,
     R_1sum_2ph_min = calc_r_sum(r_t, r_pr, r_r, r_ta, r_kv, r_sh, r_k, r_1kb, r_vl, r_d / 2)
     X_1sum_2ph = calc_x_sum(x_s, x_t, x_pr, x_r, x_ta, x_kv, x_sh, x_1kb, x_vl)
 
-    print("R1 2ф min = ", r_1sum_3ph_min)
-
     Ip0_2ph_max = calc_Ip0_2ph(R_1sum_2ph_max, X_1sum_2ph, U_sr_NN)
     Ip0_2ph_min = calc_Ip0_2ph(R_1sum_2ph_min, X_1sum_2ph, U_sr_NN)
 
@@ -338,12 +272,3 @@ def calc_short_current(switch="Xs", Sk_IkVN_Xs_Iotklnom=50, U_sr_NN=0.4,
     return (Ip0_3ph_max, Ip0_3ph_min, i_a0_3ph_max, i_a0_3ph_min, i_ud_3ph_max, i_ud_3ph_min,
             Ip0_1ph_max, Ip0_1ph_min, i_a0_1ph_max, i_a0_1ph_min, i_ud_1ph_max, i_ud_1ph_min,
             Ip0_2ph_max, Ip0_2ph_min, i_a0_2ph_max, i_a0_2ph_min, i_ud_2ph_max, i_ud_2ph_min)
-
-#    return E_f_11 / (R_1sum ** 2 + X_1sum ** 2)**0.5
-#    try:
-#        a = float(self.ui.lineEdit_A.text())
-#        b = float(self.ui.lineEdit_B.text())
-#    except ValueError:
-#        self.statusBar().showMessage('Введите число.')
-#    else:
-#        self.ui.lineEdit_C.setText(str(a + b))

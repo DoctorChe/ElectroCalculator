@@ -60,7 +60,7 @@ def create_table():
             cursor.execute("""CREATE TABLE cable
                               (linetype TEXT, 
                               material_of_cable_core TEXT, 
-                              size_of_cable_phase TEXT, size_of_cable_neutral TEXT, 
+                                  size_of_cable_phase TEXT, size_of_cable_neutral TEXT, 
                               R1 TEXT, x1 TEXT, R0 TEXT, x0 TEXT)
                            """)
 
