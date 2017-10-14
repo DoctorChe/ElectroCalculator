@@ -21,18 +21,6 @@ import math
 
 from appy.pod.renderer import Renderer
 
-rus = {
-    'transformer': {
-        'manufacturer': 'Завод изготовитель',
-        'model': 'Модель',
-        'nominal_voltage_HV': 'Номинальное напряжение ВН',
-        'nominal_voltage_LV': 'Номинальное напряжение НН',
-        'connection_windings': 'Схема соединения обмоток',
-        'full_rated_capacity': 'Полная номинальная мощность',
-        'short_circuit_loss': 'Потери короткого замыкания',
-        'impedance_voltage': 'Напряжение короткого замыкания', }
-}
-
 tr_connection_windings_list = ["Y/Yн-0", "Yн/Y-0", "Y/Δ-11", "Yн/Δ-11", "Y/Zн-11", "Δ/Yн-11", "Δ/Δ-0", "1/1н"]
 
 
@@ -365,6 +353,8 @@ class MyWin(QMainWindow):
         self.ui.comboBox_tr_full_rated_capacity.setCurrentText(self.settings.value("tr_full_rated_capacity"))
         self.ui.comboBox_tr_short_circuit_loss.setCurrentText(self.settings.value("tr_short_circuit_loss"))
         self.ui.comboBox_tr_impedance_voltage.setCurrentText(self.settings.value("tr_impedance_voltage"))
+        self.ui.lineEdit_Rt.setText(str(self.settings.value("Rt", 0)))
+        self.ui.lineEdit_Xt.setText(str(self.settings.value("Xt", 0)))
         self.ui.lineEdit_R0t.setText(str(self.settings.value("R0t", 0)))
         self.ui.lineEdit_X0t.setText(str(self.settings.value("X0t", 0)))
         self.settings.endGroup()
@@ -415,6 +405,8 @@ class MyWin(QMainWindow):
         self.settings.setValue('tr_full_rated_capacity', self.ui.comboBox_tr_full_rated_capacity.currentText())
         self.settings.setValue('tr_short_circuit_loss', self.ui.comboBox_tr_short_circuit_loss.currentText())
         self.settings.setValue('tr_impedance_voltage', self.ui.comboBox_tr_impedance_voltage.currentText())
+        self.settings.setValue('Rt', self.ui.lineEdit_Rt.text())
+        self.settings.setValue('Xt', self.ui.lineEdit_Xt.text())
         self.settings.setValue('R0t', self.ui.lineEdit_R0t.text())
         self.settings.setValue('X0t', self.ui.lineEdit_X0t.text())
         self.settings.endGroup()
@@ -668,6 +660,8 @@ class MyWin(QMainWindow):
                 self.ui.label_i_ud_min_2ph.setText("{:.2f}".format(self.i_ud_2ph_min))
                 self.ui.label_i_ao_max_2ph.setText("{:.2f}".format(self.i_a0_2ph_max))
                 self.ui.label_i_ao_min_2ph.setText("{:.2f}".format(self.i_a0_2ph_min))
+                msg = "Расчёт закончен успешно."
+                self.statusBar().showMessage(msg)
         finally:
             # Выбирается вкладка "Результаты"
             self.ui.tabWidget.setCurrentWidget(self.ui.tab_results)
@@ -843,6 +837,7 @@ if __name__ == "__main__":
     myapp.show()
     sys.exit(app.exec_())
 
+# TODO Добавить данные в БД
 # TODO Данные по умолчанию для сопротивлений прочих элементов цепи
 # TODO Расчёт сопротивления дуги
 # TODO Учёт влияния нагрева провода

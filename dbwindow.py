@@ -7,6 +7,19 @@ import dboperations
 from ui.ui_dbwindow import Ui_DBWindow
 
 
+rus = {
+    'transformer': {
+        'manufacturer': 'Завод изготовитель',
+        'model': 'Модель',
+        'nominal_voltage_HV': 'Номинальное напряжение ВН',
+        'nominal_voltage_LV': 'Номинальное напряжение НН',
+        'connection_windings': 'Схема соединения обмоток',
+        'full_rated_capacity': 'Полная номинальная мощность',
+        'short_circuit_loss': 'Потери короткого замыкания',
+        'impedance_voltage': 'Напряжение короткого замыкания', }
+    # TODO Добавить поля для таблицы cable
+}
+
 class DBWindow(QtWidgets.QDialog):
     def __init__(self, parent=None):
         QtWidgets.QWidget.__init__(self, parent,

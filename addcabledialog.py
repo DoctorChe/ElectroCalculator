@@ -54,4 +54,5 @@ class AddCableDialog(QtWidgets.QDialog):
         self.ui.comboBox_size_of_cable_neutral.clear()
         self.ui.comboBox_size_of_cable_neutral.insertItems(0, size_of_cable_neutral)
 
-# TODO Окно добавления кабеля - сделать проверку на введение всех данных перед нажатием кнопки OK
+# TODO Сделать проверку на введение всех данных перед нажатием кнопки OK
+# TODO Расчёт начальной температуры кабеля
