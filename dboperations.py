@@ -6,6 +6,7 @@ import sqlite3
 # import contextlib
 from PyQt5 import QtSql, QtCore
 
+from sortedcontainers import SortedSet
 
 # @contextlib.contextmanager
 # def DataConn():
@@ -29,9 +30,7 @@ class DataConn:
         self.conn = None
 
     def __enter__(self):
-        """
-        Открываем подключение с базой данных.
-        """
+        """Открываем подключение к базе данных"""
         self.conn = sqlite3.connect(self.db_name)
         return self.conn
 
@@ -163,7 +162,7 @@ def find_linetypes():
         sql = "SELECT linetype FROM cable"
         cursor.execute(sql)
         linetypes = [i[0] for i in cursor.fetchall()]
-    return set(linetypes)
+    return SortedSet(linetypes)
 
 
 def find_material_of_cable_core(text):
@@ -172,7 +171,7 @@ def find_material_of_cable_core(text):
         sql = "SELECT material_of_cable_core FROM cable WHERE linetype=?"
         cursor.execute(sql, [text])
         res = [i[0] for i in cursor.fetchall()]
-    return set(res)
+    return SortedSet(res)
 
 
 def find_size_of_cable_phase(*args):
@@ -184,8 +183,7 @@ def find_size_of_cable_phase(*args):
         if len(res) > 1:
             res.sort()
             res.sort(key=len)
-            # TODO Исправить сортировку (иногда не сортируются значения)
-    return set(res)
+    return SortedSet(res)
 
 
 def find_size_of_cable_neutral(*args):
@@ -198,7 +196,7 @@ def find_size_of_cable_neutral(*args):
         if len(res) > 1:
             res.sort()
             res.sort(key=len)
-    return set(res)
+    return SortedSet(res)
 
 
 def find_resistance(*args):
@@ -217,7 +215,7 @@ def find_manufacturers():
         sql = "SELECT manufacturer FROM transformer"
         cursor.execute(sql)
         manufacturers = [i[0] for i in cursor.fetchall()]
-    return set(manufacturers)
+    return SortedSet(manufacturers)
 
 
 def find_models(text):
@@ -226,7 +224,7 @@ def find_models(text):
         sql = "SELECT model FROM transformer WHERE manufacturer=?"
         cursor.execute(sql, [text])
         models = [i[0] for i in cursor.fetchall()]
-    return set(models)
+    return SortedSet(models)
 
 
 def find_nominal_voltage_HV(manufacturer, model):
@@ -235,7 +233,7 @@ def find_nominal_voltage_HV(manufacturer, model):
         sql = "SELECT nominal_voltage_HV FROM transformer WHERE manufacturer=? AND model=?"
         cursor.execute(sql, [manufacturer, model])
         nominal_voltage_HV = [i[0] for i in cursor.fetchall()]
-    return set(nominal_voltage_HV)
+    return SortedSet(nominal_voltage_HV)
 
 
 def find_nominal_voltage_LV(manufacturer, model, nominal_voltage_HV):
@@ -244,7 +242,7 @@ def find_nominal_voltage_LV(manufacturer, model, nominal_voltage_HV):
         sql = "SELECT nominal_voltage_LV FROM transformer WHERE manufacturer=? AND model=? AND nominal_voltage_HV=?"
         cursor.execute(sql, [manufacturer, model, nominal_voltage_HV])
         nominal_voltage_LV = [i[0] for i in cursor.fetchall()]
-    return set(nominal_voltage_LV)
+    return SortedSet(nominal_voltage_LV)
 
 
 def find_connection_windings(manufacturer, model, nominal_voltage_HV, nominal_voltage_LV):
@@ -254,7 +252,7 @@ def find_connection_windings(manufacturer, model, nominal_voltage_HV, nominal_vo
                   WHERE manufacturer=? AND model=? AND nominal_voltage_HV=? AND nominal_voltage_LV=?"""
         cursor.execute(sql, [manufacturer, model, nominal_voltage_HV, nominal_voltage_LV])
         connection_windings = [i[0] for i in cursor.fetchall()]
-    return set(connection_windings)
+    return SortedSet(connection_windings)
 
 
 def find_full_rated_capacity(manufacturer, model, nominal_voltage_HV, nominal_voltage_LV, connection_windings):
@@ -300,10 +298,13 @@ def find_impedance_voltage(*args):
         rows = cursor.fetchall()
         impedance_voltage = [i[0] for i in rows]
 
-        if len(impedance_voltage) > 1:
-            impedance_voltage.sort()
-            impedance_voltage.sort(key=len)
-    return impedance_voltage
+        res = SortedSet(impedance_voltage)
+
+    #     if len(impedance_voltage) > 1:
+    #         impedance_voltage.sort()
+    #         impedance_voltage.sort(key=len)
+    # return impedance_voltage
+    return res
 
 
 if __name__ == "__main__":

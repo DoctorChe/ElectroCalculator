@@ -52,7 +52,11 @@ class AddCableDialog(QtWidgets.QDialog):
         size_of_cable_neutral = dboperations.find_size_of_cable_neutral(linetype, material_of_cable_core,
                                                                         size_of_cable_phase)
         self.ui.comboBox_size_of_cable_neutral.clear()
-        self.ui.comboBox_size_of_cable_neutral.insertItems(0, size_of_cable_neutral)
+        if size_of_cable_neutral[0] != "-1":
+            self.ui.comboBox_size_of_cable_neutral.insertItems(0, size_of_cable_neutral)
+        else:
+            self.ui.comboBox_size_of_cable_neutral.insertItems(0, (self.ui.comboBox_size_of_cable_phase.currentText(),))
+
 
     def accept(self):
         if self.ui.comboBox_linetype.currentText() == "":

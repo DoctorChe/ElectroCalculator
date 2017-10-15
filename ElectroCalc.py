@@ -214,6 +214,9 @@ class MainWindow(QMainWindow):
         self.ui.comboBox_tr_impedance_voltage.clear()
         self.ui.comboBox_tr_impedance_voltage.insertItems(0, impedance_voltage)
 
+        msg = "Данные трансформатора введены успешно."
+        self.statusBar().showMessage(msg)
+
     def calc_tr_data(self):
         # Считывание данных трансформатора
         try:

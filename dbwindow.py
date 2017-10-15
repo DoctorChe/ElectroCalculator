@@ -6,7 +6,6 @@ from PyQt5 import QtWidgets, QtCore, QtSql
 import dboperations
 from ui.ui_dbwindow import Ui_DBWindow
 
-
 rus = {
     'transformer': {
         'manufacturer': 'Завод изготовитель',
@@ -27,6 +26,7 @@ rus = {
         'R0': 'R0',
         'x0': 'X0', }
 }
+
 
 class DBWindow(QtWidgets.QDialog):
     def __init__(self, parent=None):
