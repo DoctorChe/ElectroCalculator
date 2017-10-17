@@ -19,6 +19,7 @@ class AddCableDialog(QtWidgets.QDialog):
         linetype_list.extend(list(dboperations.find_linetypes()))
         linetype_list.sort()
         self.ui.comboBox_linetype.insertItems(0, linetype_list)
+        # TODO Сделать фиксированный набор: шинопровод, кабель, воздушная линия
 
     @QtCore.pyqtSlot(str)
     def on_clicked_comboBox_linetype(self, linetype):

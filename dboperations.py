@@ -2,15 +2,18 @@
 """
 Работа с базой данных
 """
+import csv
 import sqlite3
 # import contextlib
 from PyQt5 import QtSql, QtCore
 
 from sortedcontainers import SortedSet
 
+DB_PATH = "db/database.db"
+
+
 # @contextlib.contextmanager
-# def DataConn():
-#     db_name = "db/database.db"
+# def DataConn(db_name):
 #     conn = sqlite3.connect(db_name)
 #     yield # код из блока with выполнится тут
 #     conn.close()
@@ -22,11 +25,9 @@ class DataConn:
     Создает связь с базой данных SQLite и закрывает её по окончанию работы
     """
 
-    # def __init__(self, db_name):
-    def __init__(self):
+    def __init__(self, db_name):
         """Конструктор"""
-        # self.db_name = db_name
-        self.db_name = "db/database.db"
+        self.db_name = db_name
         self.conn = None
 
     def __enter__(self):
@@ -43,30 +44,39 @@ class DataConn:
             raise
 
 
-def create_table():
+def create_table(table_name):
     """Создание базы данных"""
-    with DataConn() as conn:
+    with DataConn(DB_PATH) as conn:
         with conn:
             cursor = conn.cursor()
-
-            # # Создание таблицы "трансформатор"
-            # cursor.execute("""CREATE TABLE transformer
-            #                   (manufacturer text, model text, nominal_voltage_HV text, nominal_voltage_LV text,
-            #                   connection_windings text, full_rated_capacity text)
-            #                """)
-
-            # Создание таблицы "кабель"
-            cursor.execute("""CREATE TABLE cable
-                              (linetype TEXT, 
-                              material_of_cable_core TEXT, 
+            if table_name == 'transformer':
+                # Создание таблицы "трансформатор"
+                cursor.execute("""CREATE TABLE IF NOT EXISTS transformer
+                                  (manufacturer TEXT, model TEXT, nominal_voltage_HV TEXT, nominal_voltage_LV TEXT,
+                                  connection_windings TEXT, full_rated_capacity TEXT)
+                               """)
+            elif table_name == 'cable':
+                # Создание таблицы "кабель"
+                cursor.execute("""CREATE TABLE IF NOT EXISTS cable
+                                  (linetype TEXT, 
+                                  material_of_cable_core TEXT, 
                                   size_of_cable_phase TEXT, size_of_cable_neutral TEXT, 
-                              R1 TEXT, x1 TEXT, R0 TEXT, x0 TEXT)
-                           """)
+                                  R1 TEXT, X1 TEXT, R0 TEXT, X0 TEXT)
+                               """)
+            elif table_name == 'busway':
+                # Создание таблицы "шинопровод"
+                cursor.execute("""CREATE TABLE IF NOT EXISTS busway
+                                  (manufacturer TEXT, 
+                                  model TEXT,
+                                  rated_current TEXT, 
+                                  material TEXT, 
+                                  R1 TEXT, X1 TEXT, Rnс TEXT, Xnс TEXT)
+                               """)
 
 
 def set_data_to_table():
     """Внесение данных в таблицу"""
-    with DataConn() as conn:
+    with DataConn(DB_PATH) as conn:
         with conn:
             cursor = conn.cursor()
 
@@ -84,9 +94,35 @@ def set_data_to_table():
                               """)
 
 
+def copy_from_csv_to_db(filename, tablename):
+    """Копирование данных их файлов CSV в базу данных"""
+    sql = {'busway':
+               ("""SELECT * FROM busway 
+                      WHERE manufacturer=? AND model=? AND rated_current=? AND material=? AND 
+                      R1=? AND X1=? AND Rnс=? AND Xnс=?""",
+                'INSERT OR IGNORE INTO busway VALUES (?,?,?,?,?,?,?,?)'),
+           'cable':
+               ("""SELECT * FROM cable
+                    WHERE linetype=? AND material_of_cable_core=? AND size_of_cable_phase=? 
+                    AND size_of_cable_neutral=? AND R1=? AND X1=? AND R0=? AND X0=?""",
+                'INSERT OR IGNORE INTO cable VALUES (?,?,?,?,?,?,?,?)'
+                )
+           }
+    with DataConn(DB_PATH) as conn:
+        with conn:
+            cursor = conn.cursor()
+            create_table(tablename)  # Создать таблицу, если не существует
+            with open(filename, newline='') as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    cursor.execute(sql[tablename][0], row)
+                    if not cursor.fetchall():  # проверка на существование идентичной записи
+                        cursor.execute(sql[tablename][1], row)  # Внесение данных в таблицу
+
+
 def find_tables():
     con = QtSql.QSqlDatabase.addDatabase('QSQLITE')
-    con.setDatabaseName("db/database.db")
+    con.setDatabaseName(DB_PATH)
     con.open()
     if con.isOpen():
         tables = con.tables()
@@ -96,7 +132,7 @@ def find_tables():
     con.close()
     # self.txtOutput.setText(s)
 
-    # with DataConn() as conn:
+    # with DataConn(DB_PATH) as conn:
     #     cursor = conn.cursor()
     #     sql = "SELECT name FROM sqlite_temp_master WHERE type='table'"
     #     cursor.execute(sql)
@@ -106,7 +142,7 @@ def find_tables():
 
 def show_table(equipment):
     con = QtSql.QSqlDatabase.addDatabase('QSQLITE')
-    con.setDatabaseName("db/database.db")
+    con.setDatabaseName(DB_PATH)
     con.open()
 
     model = QtSql.QSqlQueryModel(parent=None)
@@ -157,7 +193,7 @@ def show_table(equipment):
 
 
 def find_linetypes():
-    with DataConn() as conn:
+    with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = "SELECT linetype FROM cable"
         cursor.execute(sql)
@@ -166,7 +202,7 @@ def find_linetypes():
 
 
 def find_material_of_cable_core(text):
-    with DataConn() as conn:
+    with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = "SELECT material_of_cable_core FROM cable WHERE linetype=?"
         cursor.execute(sql, [text])
@@ -175,7 +211,7 @@ def find_material_of_cable_core(text):
 
 
 def find_size_of_cable_phase(*args):
-    with DataConn() as conn:
+    with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = "SELECT size_of_cable_phase FROM cable WHERE linetype=? AND material_of_cable_core=?"
         cursor.execute(sql, args)
@@ -187,7 +223,7 @@ def find_size_of_cable_phase(*args):
 
 
 def find_size_of_cable_neutral(*args):
-    with DataConn() as conn:
+    with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = "SELECT size_of_cable_neutral FROM cable " \
               "WHERE linetype=? AND material_of_cable_core=? AND size_of_cable_phase=?"
@@ -200,7 +236,7 @@ def find_size_of_cable_neutral(*args):
 
 
 def find_resistance(*args):
-    with DataConn() as conn:
+    with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = "SELECT R1, X1, R0, X0 FROM cable " \
               "WHERE linetype=? AND material_of_cable_core=? AND size_of_cable_phase=? AND size_of_cable_neutral=?"
@@ -210,7 +246,7 @@ def find_resistance(*args):
 
 
 def find_manufacturers():
-    with DataConn() as conn:
+    with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = "SELECT manufacturer FROM transformer"
         cursor.execute(sql)
@@ -219,7 +255,7 @@ def find_manufacturers():
 
 
 def find_models(text):
-    with DataConn() as conn:
+    with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = "SELECT model FROM transformer WHERE manufacturer=?"
         cursor.execute(sql, [text])
@@ -228,7 +264,7 @@ def find_models(text):
 
 
 def find_nominal_voltage_HV(manufacturer, model):
-    with DataConn() as conn:
+    with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = "SELECT nominal_voltage_HV FROM transformer WHERE manufacturer=? AND model=?"
         cursor.execute(sql, [manufacturer, model])
@@ -237,7 +273,7 @@ def find_nominal_voltage_HV(manufacturer, model):
 
 
 def find_nominal_voltage_LV(manufacturer, model, nominal_voltage_HV):
-    with DataConn() as conn:
+    with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = "SELECT nominal_voltage_LV FROM transformer WHERE manufacturer=? AND model=? AND nominal_voltage_HV=?"
         cursor.execute(sql, [manufacturer, model, nominal_voltage_HV])
@@ -246,7 +282,7 @@ def find_nominal_voltage_LV(manufacturer, model, nominal_voltage_HV):
 
 
 def find_connection_windings(manufacturer, model, nominal_voltage_HV, nominal_voltage_LV):
-    with DataConn() as conn:
+    with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = """SELECT connection_windings FROM transformer
                   WHERE manufacturer=? AND model=? AND nominal_voltage_HV=? AND nominal_voltage_LV=?"""
@@ -256,7 +292,7 @@ def find_connection_windings(manufacturer, model, nominal_voltage_HV, nominal_vo
 
 
 def find_full_rated_capacity(manufacturer, model, nominal_voltage_HV, nominal_voltage_LV, connection_windings):
-    with DataConn() as conn:
+    with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = """SELECT full_rated_capacity FROM transformer
                   WHERE manufacturer=? AND model=? AND nominal_voltage_HV=? AND 
@@ -271,7 +307,7 @@ def find_full_rated_capacity(manufacturer, model, nominal_voltage_HV, nominal_vo
 
 def find_short_circuit_loss(manufacturer, model, nominal_voltage_HV, nominal_voltage_LV, connection_windings,
                             full_rated_capacity):
-    with DataConn() as conn:
+    with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = """SELECT short_circuit_loss FROM transformer
                   WHERE manufacturer=? AND model=? AND nominal_voltage_HV=? AND 
@@ -288,7 +324,7 @@ def find_short_circuit_loss(manufacturer, model, nominal_voltage_HV, nominal_vol
 
 
 def find_impedance_voltage(*args):
-    with DataConn() as conn:
+    with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = """SELECT impedance_voltage FROM transformer
                   WHERE manufacturer=? AND model=? AND nominal_voltage_HV=? AND 
@@ -300,7 +336,7 @@ def find_impedance_voltage(*args):
 
         res = SortedSet(impedance_voltage)
 
-    #     if len(impedance_voltage) > 1:
+    # if len(impedance_voltage) > 1:
     #         impedance_voltage.sort()
     #         impedance_voltage.sort(key=len)
     # return impedance_voltage
@@ -310,4 +346,6 @@ def find_impedance_voltage(*args):
 if __name__ == "__main__":
     # set_data_to_table()
     # create_table()
+    # for i in range(6,15):
+    #     copy_from_csv_to_db('db/Таблица' + str(i) + '.csv', 'cable')
     pass
