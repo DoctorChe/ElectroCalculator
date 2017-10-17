@@ -33,7 +33,7 @@
        <enum>QTabWidget::Rounded</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>
@@ -1496,7 +1496,7 @@
          <string>Добавить кабель из базы данных</string>
         </property>
        </widget>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="pushButton_add_busway">
         <property name="geometry">
          <rect>
           <x>410</x>
@@ -3297,12 +3297,12 @@
    <slot>on_clicked_comboBox_tr_regime(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>314</x>
+     <x>231</x>
      <y>529</y>
     </hint>
     <hint type="destinationlabel">
-     <x>321</x>
-     <y>528</y>
+     <x>366</x>
+     <y>539</y>
     </hint>
    </hints>
   </connection>
@@ -3547,7 +3547,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_2</sender>
+   <sender>pushButton_add_busway</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
    <slot>add_busway_from_db()</slot>

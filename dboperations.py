@@ -60,7 +60,7 @@ def create_table(table_name):
                 cursor.execute("""CREATE TABLE IF NOT EXISTS cable
                                   (linetype TEXT, 
                                   material_of_cable_core TEXT, 
-                                  size_of_cable_phase TEXT, size_of_cable_neutral TEXT, 
+                                  size_of_cable_phase REAL, size_of_cable_neutral REAL, 
                                   R1 TEXT, X1 TEXT, R0 TEXT, X0 TEXT)
                                """)
             elif table_name == 'busway':
@@ -70,7 +70,7 @@ def create_table(table_name):
                                   model TEXT,
                                   rated_current TEXT, 
                                   material TEXT, 
-                                  R1 TEXT, X1 TEXT, Rnс TEXT, Xnс TEXT)
+                                  R1 TEXT, X1 TEXT, Rnc TEXT, Xnc TEXT)
                                """)
 
 
@@ -99,7 +99,7 @@ def copy_from_csv_to_db(filename, tablename):
     sql = {'busway':
                ("""SELECT * FROM busway 
                       WHERE manufacturer=? AND model=? AND rated_current=? AND material=? AND 
-                      R1=? AND X1=? AND Rnс=? AND Xnс=?""",
+                      R1=? AND X1=? AND Rnc=? AND Xnc=?""",
                 'INSERT OR IGNORE INTO busway VALUES (?,?,?,?,?,?,?,?)'),
            'cable':
                ("""SELECT * FROM cable
@@ -192,20 +192,66 @@ def show_table(equipment):
     con.close()
 
 
+def find_busway_manufactures():
+    with DataConn(DB_PATH) as conn:
+        cursor = conn.cursor()
+        sql = "SELECT manufacturer FROM busway"
+        cursor.execute(sql)
+        res = [i[0] for i in cursor.fetchall()]
+    return SortedSet(res)
+
+
+def find_busway_model(*args):
+    with DataConn(DB_PATH) as conn:
+        cursor = conn.cursor()
+        sql = "SELECT model FROM busway WHERE manufacturer=?"
+        cursor.execute(sql, args)
+        res = [i[0] for i in cursor.fetchall()]
+    return SortedSet(res)
+
+
+def find_busway_rated_current(*args):
+    with DataConn(DB_PATH) as conn:
+        cursor = conn.cursor()
+        sql = "SELECT rated_current FROM busway WHERE manufacturer=? AND model=?"
+        cursor.execute(sql, args)
+        res = [i[0] for i in cursor.fetchall()]
+    return SortedSet(res)
+
+
+def find_busway_material(*args):
+    with DataConn(DB_PATH) as conn:
+        cursor = conn.cursor()
+        sql = "SELECT material FROM busway WHERE manufacturer=? AND model=? AND rated_current=?"
+        cursor.execute(sql, args)
+        res = [i[0] for i in cursor.fetchall()]
+    return SortedSet(res)
+
+
+def find_busway_resistance(*args):
+    with DataConn(DB_PATH) as conn:
+        cursor = conn.cursor()
+        sql = "SELECT R1, X1, Rnc, Xnc FROM busway " \
+              "WHERE manufacturer=? AND model=? AND rated_current=? AND material=?"
+        cursor.execute(sql, args)
+        res = cursor.fetchone()
+    return res
+
+
 def find_linetypes():
     with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = "SELECT linetype FROM cable"
         cursor.execute(sql)
-        linetypes = [i[0] for i in cursor.fetchall()]
-    return SortedSet(linetypes)
+        res = [i[0] for i in cursor.fetchall()]
+    return SortedSet(res)
 
 
-def find_material_of_cable_core(text):
+def find_material_of_cable_core(*args):
     with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = "SELECT material_of_cable_core FROM cable WHERE linetype=?"
-        cursor.execute(sql, [text])
+        cursor.execute(sql, args)
         res = [i[0] for i in cursor.fetchall()]
     return SortedSet(res)
 
@@ -216,9 +262,10 @@ def find_size_of_cable_phase(*args):
         sql = "SELECT size_of_cable_phase FROM cable WHERE linetype=? AND material_of_cable_core=?"
         cursor.execute(sql, args)
         res = [i[0] for i in cursor.fetchall()]
-        if len(res) > 1:
-            res.sort()
-            res.sort(key=len)
+        # res = list(set(res))
+        # if len(res) > 1:
+        #     res.sort()
+            # res.sort(key=len)
     return SortedSet(res)
 
 
@@ -229,9 +276,10 @@ def find_size_of_cable_neutral(*args):
               "WHERE linetype=? AND material_of_cable_core=? AND size_of_cable_phase=?"
         cursor.execute(sql, args)
         res = [i[0] for i in cursor.fetchall()]
-        if len(res) > 1:
-            res.sort()
-            res.sort(key=len)
+        res = list(set(res))
+        # if len(res) > 1:
+        #     res.sort()
+            # res.sort(key=len)
     return SortedSet(res)
 
 
@@ -254,73 +302,79 @@ def find_manufacturers():
     return SortedSet(manufacturers)
 
 
-def find_models(text):
+def find_models(*args):
     with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = "SELECT model FROM transformer WHERE manufacturer=?"
-        cursor.execute(sql, [text])
+        cursor.execute(sql, args)
         models = [i[0] for i in cursor.fetchall()]
     return SortedSet(models)
 
 
-def find_nominal_voltage_HV(manufacturer, model):
+def find_nominal_voltage_HV(*args):
     with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = "SELECT nominal_voltage_HV FROM transformer WHERE manufacturer=? AND model=?"
-        cursor.execute(sql, [manufacturer, model])
-        nominal_voltage_HV = [i[0] for i in cursor.fetchall()]
-    return SortedSet(nominal_voltage_HV)
+        cursor.execute(sql, args)
+        res = [i[0] for i in cursor.fetchall()]
+        res = list(set(res))
+        if len(res) > 1:
+            res.sort()
+            res.sort(key=len)
+    return res
 
 
-def find_nominal_voltage_LV(manufacturer, model, nominal_voltage_HV):
+def find_nominal_voltage_LV(*args):
     with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = "SELECT nominal_voltage_LV FROM transformer WHERE manufacturer=? AND model=? AND nominal_voltage_HV=?"
-        cursor.execute(sql, [manufacturer, model, nominal_voltage_HV])
-        nominal_voltage_LV = [i[0] for i in cursor.fetchall()]
-    return SortedSet(nominal_voltage_LV)
+        cursor.execute(sql, args)
+        res = [i[0] for i in cursor.fetchall()]
+        res = list(set(res))
+        if len(res) > 1:
+            res.sort()
+            res.sort(key=len)
+    return res
 
 
-def find_connection_windings(manufacturer, model, nominal_voltage_HV, nominal_voltage_LV):
+def find_connection_windings(*args):
     with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = """SELECT connection_windings FROM transformer
                   WHERE manufacturer=? AND model=? AND nominal_voltage_HV=? AND nominal_voltage_LV=?"""
-        cursor.execute(sql, [manufacturer, model, nominal_voltage_HV, nominal_voltage_LV])
+        cursor.execute(sql, args)
         connection_windings = [i[0] for i in cursor.fetchall()]
     return SortedSet(connection_windings)
 
 
-def find_full_rated_capacity(manufacturer, model, nominal_voltage_HV, nominal_voltage_LV, connection_windings):
+def find_full_rated_capacity(*args):
     with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = """SELECT full_rated_capacity FROM transformer
                   WHERE manufacturer=? AND model=? AND nominal_voltage_HV=? AND 
                         nominal_voltage_LV=? AND connection_windings=?"""
-        cursor.execute(sql, [manufacturer, model, nominal_voltage_HV, nominal_voltage_LV, connection_windings])
-        full_rated_capacity = [i[0] for i in cursor.fetchall()]
-        full_rated_capacity.sort()
-        full_rated_capacity.sort(key=len)
-        # full_rated_capacity.sort(key=lambda item: (-len(item), item))
-    return full_rated_capacity
+        cursor.execute(sql, args)
+        res = [i[0] for i in cursor.fetchall()]
+        res = list(set(res))
+        if len(res) > 1:
+            res.sort()
+            res.sort(key=len)
+    return res
 
 
-def find_short_circuit_loss(manufacturer, model, nominal_voltage_HV, nominal_voltage_LV, connection_windings,
-                            full_rated_capacity):
+def find_short_circuit_loss(*args):
     with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = """SELECT short_circuit_loss FROM transformer
                   WHERE manufacturer=? AND model=? AND nominal_voltage_HV=? AND 
                         nominal_voltage_LV=? AND connection_windings=? AND full_rated_capacity=?"""
-        cursor.execute(sql, [manufacturer, model, nominal_voltage_HV, nominal_voltage_LV, connection_windings,
-                             full_rated_capacity])
+        cursor.execute(sql, args)
         rows = cursor.fetchall()
-        short_circuit_loss = [i[0] for i in rows]
-
-        if len(short_circuit_loss) > 1:
-            short_circuit_loss.sort()
-            short_circuit_loss.sort(key=len)
-    return short_circuit_loss
+        res = [i[0] for i in rows]
+        if len(res) > 1:
+            res.sort()
+            res.sort(key=len)
+    return res
 
 
 def find_impedance_voltage(*args):
@@ -332,20 +386,17 @@ def find_impedance_voltage(*args):
                         full_rated_capacity=? AND short_circuit_loss=?"""
         cursor.execute(sql, args)
         rows = cursor.fetchall()
-        impedance_voltage = [i[0] for i in rows]
-
-        res = SortedSet(impedance_voltage)
-
-    # if len(impedance_voltage) > 1:
-    #         impedance_voltage.sort()
-    #         impedance_voltage.sort(key=len)
-    # return impedance_voltage
+        res = [i[0] for i in rows]
+        if len(res) > 1:
+            res.sort()
+            res.sort(key=len)
     return res
 
 
 if __name__ == "__main__":
     # set_data_to_table()
     # create_table()
+    copy_from_csv_to_db('db/Шинопровод.csv', 'busway')
     # for i in range(6,15):
     #     copy_from_csv_to_db('db/Таблица' + str(i) + '.csv', 'cable')
     pass

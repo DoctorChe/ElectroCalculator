@@ -11,6 +11,7 @@ from PyQt5 import QtGui
 import short_circuit_current_calculation as sccc
 import dboperations
 import addcabledialog
+import addbuswaydialog
 import dbwindow
 import math
 
@@ -21,6 +22,7 @@ tr_connection_windings_list = ["Y/Yн-0", "Yн/Y-0", "Y/Δ-11", "Yн/Δ-11", "Y/
 
 class MainWindow(QMainWindow):
     """Основной класс программы"""
+
     def __init__(self, iniFile, parent=None):
         QMainWindow.__init__(self, parent)
         self.ui = Ui_MainWindow()
@@ -287,7 +289,7 @@ class MainWindow(QMainWindow):
         self.ui.comboBox_U_sr_VN.clear()
         self.ui.comboBox_U_sr_NN.clear()
         self.ui.comboBox_tr_connection_windings.clear()
-        self.ui.comboBox_tr_connection_windings.insertItems(0, ("", ))
+        self.ui.comboBox_tr_connection_windings.insertItems(0, ("",))
         self.ui.comboBox_tr_connection_windings.insertItems(1, tr_connection_windings_list)
         self.ui.comboBox_tr_full_rated_capacity.clear()
         self.ui.comboBox_tr_impedance_voltage.clear()
@@ -726,8 +728,10 @@ class MainWindow(QMainWindow):
             material_of_cable = self.addcabledialog.ui.comboBox_material_of_cable_core.currentText()
             size_of_cable_phase = self.addcabledialog.ui.comboBox_size_of_cable_phase.currentText()
             size_of_cable_neutral = self.addcabledialog.ui.comboBox_size_of_cable_neutral.currentText()
-            resistance = dboperations.find_resistance(linetype, material_of_cable, size_of_cable_phase,
-                                                      size_of_cable_neutral)
+            if size_of_cable_neutral == 'нет':
+                size_of_cable_neutral = '-1'
+            resistance = dboperations.find_resistance(linetype, material_of_cable,
+                                                      size_of_cable_phase, float(size_of_cable_neutral))
             linelength = self.addcabledialog.ui.doubleSpinBox_linelength.value()
             parallel_fider = self.addcabledialog.ui.spinBox_parallel_fider.value()
             r1 = float(resistance[0]) * linelength / parallel_fider
@@ -741,7 +745,7 @@ class MainWindow(QMainWindow):
 
     @QtCore.pyqtSlot()
     def add_aerial_line_from_db(self):
-        """Добавление кабеля из базы данных"""
+        """Добавление воздушной линии из базы данных"""
         self.addcabledialog = addcabledialog.AddCableDialog()
         result = self.addcabledialog.exec_()
         if result == QtWidgets.QDialog.Accepted:
@@ -749,8 +753,10 @@ class MainWindow(QMainWindow):
             material_of_cable = self.addcabledialog.ui.comboBox_material_of_cable_core.currentText()
             size_of_cable_phase = self.addcabledialog.ui.comboBox_size_of_cable_phase.currentText()
             size_of_cable_neutral = self.addcabledialog.ui.comboBox_size_of_cable_neutral.currentText()
-            resistance = dboperations.find_resistance(linetype, material_of_cable, size_of_cable_phase,
-                                                      size_of_cable_neutral)
+            if size_of_cable_neutral == 'нет':
+                size_of_cable_neutral = '-1'
+            resistance = dboperations.find_resistance(linetype, material_of_cable,
+                                                      size_of_cable_phase, float(size_of_cable_neutral))
             linelength = self.addcabledialog.ui.doubleSpinBox_linelength.value()
             parallel_fider = self.addcabledialog.ui.spinBox_parallel_fider.value()
             r1 = float(resistance[0]) * linelength / parallel_fider
@@ -764,22 +770,24 @@ class MainWindow(QMainWindow):
 
     @QtCore.pyqtSlot()
     def add_busway_from_db(self):
-        """Добавление кабеля из базы данных"""
-        self.addcabledialog = addcabledialog.AddCableDialog()
-        result = self.addcabledialog.exec_()
+        """Добавление шинопровода из базы данных"""
+        self.addbuswaydialog = addbuswaydialog.AddBuswayDialog()
+        result = self.addbuswaydialog.exec_()
         if result == QtWidgets.QDialog.Accepted:
-            linetype = self.addcabledialog.ui.comboBox_linetype.currentText()
-            material_of_cable = self.addcabledialog.ui.comboBox_material_of_cable_core.currentText()
-            size_of_cable_phase = self.addcabledialog.ui.comboBox_size_of_cable_phase.currentText()
-            size_of_cable_neutral = self.addcabledialog.ui.comboBox_size_of_cable_neutral.currentText()
-            resistance = dboperations.find_resistance(linetype, material_of_cable, size_of_cable_phase,
-                                                      size_of_cable_neutral)
-            linelength = self.addcabledialog.ui.doubleSpinBox_linelength.value()
-            parallel_fider = self.addcabledialog.ui.spinBox_parallel_fider.value()
+            linetype = self.addbuswaydialog.ui.comboBox_linetype.currentText()
+            material_of_cable = self.addbuswaydialog.ui.comboBox_material_of_cable_core.currentText()
+            size_of_cable_phase = self.addbuswaydialog.ui.comboBox_size_of_cable_phase.currentText()
+            size_of_cable_neutral = self.addbuswaydialog.ui.comboBox_size_of_cable_neutral.currentText()
+            resistance = dboperations.find_busway_resistance(linetype, material_of_cable, size_of_cable_phase,
+                                                             size_of_cable_neutral)
+            linelength = self.addbuswaydialog.ui.doubleSpinBox_linelength.value()
+            parallel_fider = self.addbuswaydialog.ui.spinBox_parallel_fider.value()
             r1 = float(resistance[0]) * linelength / parallel_fider
             x1 = float(resistance[1]) * linelength / parallel_fider
-            r0 = float(resistance[2]) * linelength / parallel_fider
-            x0 = float(resistance[3]) * linelength / parallel_fider
+            rnc = float(resistance[2]) * linelength / parallel_fider
+            # xnc = float(resistance[3]) * linelength / parallel_fider
+            r0 = r1 + 3*rnc
+            x0 = 8.5*x1
             self.ui.lineEdit_Rsh.setText("{:.2f}".format(r1))
             self.ui.lineEdit_Xsh.setText("{:.2f}".format(x1))
             self.ui.lineEdit_R0sh.setText("{:.2f}".format(r0))
@@ -808,7 +816,7 @@ if __name__ == "__main__":
     myapp.show()
     sys.exit(app.exec_())
 
-# TODO Добавить данные в БД
+# TODO Добавить данные в БД по воздушной линии
 # TODO Данные по умолчанию для сопротивлений прочих элементов цепи
 # TODO Расчёт сопротивления дуги
 # TODO Учёт влияния нагрева провода
