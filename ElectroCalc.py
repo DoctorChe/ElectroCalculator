@@ -241,13 +241,15 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage(msg)
         else:
             # Pk_nom, U_NN_nom, St_nom, u_k, R0t, X0t,  # Трансформатор
-            R1t = sccc.calc_Rt(Pk_nom, U_NN_nom, St_nom)
-            X1t = sccc.calc_Xt(Pk_nom, U_NN_nom, St_nom, u_k)
+            R1t = sccc.calc_Rt(Pk_nom, U_NN_nom*1000, St_nom)
+            X1t = sccc.calc_Xt(Pk_nom, U_NN_nom*1000, St_nom, u_k)
+            # print(R1t, X1t)
             self.ui.lineEdit_Rt.setText("{:.2f}".format(R1t))
             self.ui.lineEdit_Xt.setText("{:.2f}".format(X1t))
             if self.ui.comboBox_tr_connection_windings.currentText() == "Δ/Yн-11":
                 R0t = R1t
                 X0t = X1t
+                print('Rt = ', R0t, 'Xt = ', X0t)
                 self.ui.lineEdit_R0t.setText("{:.2f}".format(R0t))
                 self.ui.lineEdit_X0t.setText("{:.2f}".format(X0t))
                 msg = "Расчетные данные трансформатора вычислены успешно."
@@ -451,7 +453,8 @@ class MainWindow(QMainWindow):
 
             switch = switch_Xc(self.ui.comboBox_Sk_IkVN_Xs.currentIndex())
             # Вычисление эквивалентного индуктивного сопротивления системы
-            x_s = sccc.calc_Xs(switch, Sk_IkVN_Xs_Iotklnom, U_sr_NN, U_sr_VN)
+            x_s = sccc.calc_Xs(switch, Sk_IkVN_Xs_Iotklnom, U_sr_NN*1000, U_sr_VN)
+            print('Xs = ', x_s)
 
         # Считывание данных трансформатора
         try:
@@ -598,7 +601,7 @@ class MainWindow(QMainWindow):
              self.i_ud_1ph_min,
              self.Ip0_2ph_max, self.Ip0_2ph_min, self.i_a0_2ph_max, self.i_a0_2ph_min, self.i_ud_2ph_max,
              self.i_ud_2ph_min] = sccc.calc_short_current(
-                U_sr_NN,
+                U_sr_NN*1000,
                 x_s,  # Система
                 Rt, Xt, R0t, X0t,  # Трансформатор
                 Rpr, Xpr,  # Прочие элементы цепи, заданные одним значением
@@ -803,8 +806,8 @@ class QRV(QtGui.QRegExpValidator):
         s = self.fixup(text) if res != QtGui.QValidator.Acceptable else s
         return res, s, i
 
-    @classmethod
-    def fixup(cls, s):
+    @staticmethod
+    def fixup(s):
         s = s.replace(',', '.') if ',' in s else s
         return s
 

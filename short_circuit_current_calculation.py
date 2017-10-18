@@ -37,9 +37,11 @@ Iоткл.ном - номинальный ток отключения выклю
     высшего напряжения понижающего трансформатора
     """
     if switch == "IkVN" or switch == "Iotklnom":
-        return U_sr_NN ** 2 / (3 ** 0.5 * Sk_IkVN_Xs_Iotklnom * U_sr_VN)
+        return U_sr_NN ** 2 / (3 ** 0.5 * Sk_IkVN_Xs_Iotklnom * U_sr_VN) * 10**-3
+        # return U_sr_NN ** 2 / (3 ** 0.5 * Sk_IkVN_Xs_Iotklnom * U_sr_VN) * 10**3
     elif switch == "Sk":
         return U_sr_NN ** 2 / Sk_IkVN_Xs_Iotklnom * 10 ** -3
+        # return U_sr_NN ** 2 / Sk_IkVN_Xs_Iotklnom * 10**3
     else:
         return Sk_IkVN_Xs_Iotklnom
 
@@ -55,6 +57,7 @@ U_NN_nom (UННном) - номинальное напряжение обмот�
  трансформатора, кВ
     """
     return Pk_nom * (U_NN_nom * 10 ** -3) ** 2 / St_nom ** 2 * 10 ** 6
+    # return Pk_nom * U_NN_nom ** 2 / St_nom ** 2 * 10 ** 6
 
 
 def calc_Xt(Pk_nom, U_NN_nom, St_nom, u_k):
@@ -68,7 +71,8 @@ U_NN_nom (UННном) - номинальное напряжение обмот�
  трансформатора, кВ
 u_k (uк) - напряжение короткого замыкания трансформатора, %
     """
-    return (u_k ** 2 - (100 * Pk_nom / St_nom) ** 2) ** 0.5 * (U_NN_nom * 10 ** -3) ** 2 / St_nom * 10 ** 4
+    return (u_k ** 2 - (100 * Pk_nom / St_nom) ** 2) ** 0.5 * (U_NN_nom * 10**-3)** 2 / St_nom * 10 ** 4
+    # return (u_k ** 2 - (100 * Pk_nom / St_nom) ** 2) ** 0.5 * U_NN_nom ** 2 / St_nom * 10 ** 4
 
 
 def calc_Rta(r_ta):
@@ -216,7 +220,7 @@ x 1 = xс + xт + xр + xТА + xкв + xш + x1кб + x1вл
     return U_sr_NN / (2 * math.sqrt(r_1sum ** 2 + x_1sum ** 2))
 
 
-def calc_short_current(U_sr_NN=0.4,
+def calc_short_current(U_sr_NN=400.0,
                        x_s=0,
                        r_t=0, x_t=0, r_0t=0, x_0t=0,
                        r_pr=0, x_pr=0,

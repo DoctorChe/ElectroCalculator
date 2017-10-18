@@ -53,7 +53,8 @@ def create_table(table_name):
                 # Создание таблицы "трансформатор"
                 cursor.execute("""CREATE TABLE IF NOT EXISTS transformer
                                   (manufacturer TEXT, model TEXT, nominal_voltage_HV TEXT, nominal_voltage_LV TEXT,
-                                  connection_windings TEXT, full_rated_capacity TEXT)
+                                  connection_windings TEXT, full_rated_capacity TEXT, short_circuit_loss TEXT,
+                                  impedance_voltage TEXT)
                                """)
             elif table_name == 'cable':
                 # Создание таблицы "кабель"
@@ -105,8 +106,12 @@ def copy_from_csv_to_db(filename, tablename):
                ("""SELECT * FROM cable
                     WHERE linetype=? AND material_of_cable_core=? AND size_of_cable_phase=? 
                     AND size_of_cable_neutral=? AND R1=? AND X1=? AND R0=? AND X0=?""",
-                'INSERT OR IGNORE INTO cable VALUES (?,?,?,?,?,?,?,?)'
-                )
+                'INSERT OR IGNORE INTO cable VALUES (?,?,?,?,?,?,?,?)'),
+           'transformer':
+               ("""SELECT * FROM transformer
+                    WHERE manufacturer=? AND model=? AND nominal_voltage_HV=? AND nominal_voltage_LV=? AND 
+                    connection_windings=? AND full_rated_capacity=? AND short_circuit_loss=? AND impedance_voltage=?""",
+                'INSERT OR IGNORE INTO transformer VALUES (?,?,?,?,?,?,?,?)'),
            }
     with DataConn(DB_PATH) as conn:
         with conn:
@@ -396,7 +401,8 @@ def find_impedance_voltage(*args):
 if __name__ == "__main__":
     # set_data_to_table()
     # create_table()
-    copy_from_csv_to_db('db/Шинопровод.csv', 'busway')
+    # copy_from_csv_to_db('db/Шинопровод.csv', 'busway')
     # for i in range(6,15):
     #     copy_from_csv_to_db('db/Таблица' + str(i) + '.csv', 'cable')
+    copy_from_csv_to_db('db/Тр-р ГОСТ 11920-85 табл.4.csv', 'transformer')
     pass
