@@ -241,15 +241,22 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_11">
          <item>
-          <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0,0" columnstretch="5,0,0,0" columnminimumwidth="0,0,0,0">
-           <item row="6" column="0">
+          <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0,0,0" columnstretch="5,0,0,0" columnminimumwidth="0,0,0,0">
+           <item row="4" column="2">
+            <widget class="QComboBox" name="comboBox_U_sr_NN">
+             <property name="editable">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="0">
             <widget class="QLabel" name="label_28">
              <property name="text">
               <string>Потери короткого замыкания:</string>
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
+           <item row="4" column="1">
             <widget class="QLabel" name="label_21">
              <property name="font">
               <font>
@@ -272,34 +279,27 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="2">
+           <item row="3" column="2">
             <widget class="QComboBox" name="comboBox_U_sr_VN">
              <property name="editable">
               <bool>false</bool>
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
+           <item row="3" column="0">
             <widget class="QLabel" name="label_16">
              <property name="text">
               <string>Номинальное напряжение ВН:</string>
              </property>
             </widget>
            </item>
-           <item row="1" column="2">
-            <widget class="QComboBox" name="comboBox_tr_model"/>
-           </item>
-           <item row="3" column="2">
-            <widget class="QComboBox" name="comboBox_U_sr_NN">
-             <property name="editable">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="2">
             <widget class="QComboBox" name="comboBox_tr_manufacturer"/>
            </item>
-           <item row="2" column="1">
+           <item row="1" column="2">
+            <widget class="QComboBox" name="comboBox_tr_model"/>
+           </item>
+           <item row="3" column="1">
             <widget class="QLabel" name="label_17">
              <property name="font">
               <font>
@@ -322,14 +322,14 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="0">
+           <item row="4" column="0">
             <widget class="QLabel" name="label_20">
              <property name="text">
               <string>Номинальное напряжение НН:</string>
              </property>
             </widget>
            </item>
-           <item row="2" column="3">
+           <item row="3" column="3">
             <widget class="QLabel" name="label_18">
              <property name="font">
               <font>
@@ -342,20 +342,7 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="3">
-            <widget class="QLabel" name="label_19">
-             <property name="font">
-              <font>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>кВ</string>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="2">
+           <item row="5" column="2">
             <widget class="QComboBox" name="comboBox_tr_connection_windings">
              <property name="editable">
               <bool>false</bool>
@@ -407,8 +394,8 @@
              </item>
             </widget>
            </item>
-           <item row="5" column="3">
-            <widget class="QLabel" name="label_22">
+           <item row="4" column="3">
+            <widget class="QLabel" name="label_19">
              <property name="font">
               <font>
                <weight>75</weight>
@@ -416,69 +403,39 @@
               </font>
              </property>
              <property name="text">
-              <string>кВА</string>
+              <string>кВ</string>
              </property>
             </widget>
            </item>
-           <item row="5" column="1">
-            <widget class="QLabel" name="label_24">
-             <property name="font">
-              <font>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>Sном = </string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="4" column="0">
+           <item row="5" column="0">
             <widget class="QLabel" name="label_25">
              <property name="text">
               <string>Схема соединения обмоток:</string>
              </property>
             </widget>
            </item>
-           <item row="5" column="0">
-            <widget class="QLabel" name="label_23">
-             <property name="text">
-              <string>Полная номинальная мощность:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="5" column="2">
-            <widget class="QComboBox" name="comboBox_tr_full_rated_capacity">
-             <property name="editable">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="7" column="0">
-            <widget class="QLabel" name="label_29">
-             <property name="text">
-              <string>Напряжение короткого замыкания:</string>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="2">
+           <item row="7" column="2">
             <widget class="QComboBox" name="comboBox_tr_short_circuit_loss">
              <property name="editable">
               <bool>false</bool>
              </property>
             </widget>
            </item>
-           <item row="7" column="2">
+           <item row="8" column="2">
             <widget class="QComboBox" name="comboBox_tr_impedance_voltage">
              <property name="editable">
               <bool>false</bool>
              </property>
             </widget>
            </item>
-           <item row="6" column="3">
+           <item row="8" column="0">
+            <widget class="QLabel" name="label_29">
+             <property name="text">
+              <string>Напряжение короткого замыкания:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="3">
             <widget class="QLabel" name="label_30">
              <property name="font">
               <font>
@@ -491,7 +448,7 @@
              </property>
             </widget>
            </item>
-           <item row="7" column="3">
+           <item row="8" column="3">
             <widget class="QLabel" name="label_31">
              <property name="font">
               <font>
@@ -504,7 +461,7 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="1">
+           <item row="7" column="1">
             <widget class="QLabel" name="label_32">
              <property name="font">
               <font>
@@ -520,7 +477,7 @@
              </property>
             </widget>
            </item>
-           <item row="7" column="1">
+           <item row="8" column="1">
             <widget class="QLabel" name="label_33">
              <property name="font">
               <font>
@@ -533,6 +490,49 @@
              </property>
              <property name="alignment">
               <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_23">
+             <property name="text">
+              <string>Полная номинальная мощность:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLabel" name="label_24">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>Sном = </string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2">
+            <widget class="QComboBox" name="comboBox_tr_full_rated_capacity">
+             <property name="editable">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="3">
+            <widget class="QLabel" name="label_22">
+             <property name="font">
+              <font>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>кВА</string>
              </property>
             </widget>
            </item>
@@ -3146,6 +3146,7 @@
      <string>Расчёт</string>
     </property>
     <addaction name="action_Calculate"/>
+    <addaction name="action_clean_form"/>
    </widget>
    <widget class="QMenu" name="menu_Report">
     <property name="title">
@@ -3213,6 +3214,11 @@
     <string>Версия Qt</string>
    </property>
   </action>
+  <action name="action_clean_form">
+   <property name="text">
+    <string>Очистить форму</string>
+   </property>
+  </action>
  </widget>
  <tabstops>
   <tabstop>comboBox_Sk_IkVN_Xs</tabstop>
@@ -3222,7 +3228,6 @@
   <tabstop>comboBox_U_sr_VN</tabstop>
   <tabstop>comboBox_U_sr_NN</tabstop>
   <tabstop>comboBox_tr_connection_windings</tabstop>
-  <tabstop>comboBox_tr_full_rated_capacity</tabstop>
   <tabstop>comboBox_tr_short_circuit_loss</tabstop>
   <tabstop>comboBox_tr_impedance_voltage</tabstop>
   <tabstop>comboBox_tr_regime</tabstop>
@@ -3250,7 +3255,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>448</x>
-     <y>365</y>
+     <y>266</y>
     </hint>
     <hint type="destinationlabel">
      <x>533</x>
@@ -3314,7 +3319,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>446</x>
-     <y>266</y>
+     <y>299</y>
     </hint>
     <hint type="destinationlabel">
      <x>536</x>
@@ -3346,7 +3351,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>451</x>
-     <y>296</y>
+     <y>329</y>
     </hint>
     <hint type="destinationlabel">
      <x>535</x>
@@ -3362,7 +3367,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>447</x>
-     <y>329</y>
+     <y>362</y>
     </hint>
     <hint type="destinationlabel">
      <x>532</x>
@@ -3594,6 +3599,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_clean_form</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>clean_form()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>365</x>
+     <y>401</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>on_clicked_comboBox_tr_regime(int)</slot>
@@ -3610,5 +3631,6 @@
   <slot>add_busway_from_db()</slot>
   <slot>add_aerial_line_from_db()</slot>
   <slot>calc_tr_data()</slot>
+  <slot>clean_form()</slot>
  </slots>
 </ui>

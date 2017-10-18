@@ -69,6 +69,7 @@ class Ui_AddBuswayDialog(object):
         self.label.setObjectName("label")
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
         self.doubleSpinBox_linelength = QtWidgets.QDoubleSpinBox(AddBuswayDialog)
+        self.doubleSpinBox_linelength.setMaximum(99999.99)
         self.doubleSpinBox_linelength.setObjectName("doubleSpinBox_linelength")
         self.gridLayout.addWidget(self.doubleSpinBox_linelength, 3, 2, 1, 1)
         self.label_5 = QtWidgets.QLabel(AddBuswayDialog)

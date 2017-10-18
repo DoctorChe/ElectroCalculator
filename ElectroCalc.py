@@ -115,8 +115,11 @@ class MainWindow(QMainWindow):
         Добавление их в comboBox_tr_manufacturer
         """
         models = dboperations.find_manufacturers()
-        # self.ui.comboBox_tr_manufacturer.clear()
+        self.ui.comboBox_tr_manufacturer.clear()
+        if len(models) > 1:
+            self.ui.comboBox_tr_manufacturer.insertItems(0, ['', ])
         self.ui.comboBox_tr_manufacturer.insertItems(1, models)
+        self.clean_calc_data_tr()
 
     @QtCore.pyqtSlot(str)
     def on_clicked_comboBox_tr_manufacturer(self, manufacturer):
@@ -126,18 +129,50 @@ class MainWindow(QMainWindow):
         """
         models = dboperations.find_models(manufacturer)
         self.ui.comboBox_tr_model.clear()
-        self.ui.comboBox_tr_model.insertItems(0, models)
+        if len(models) > 1:
+            self.ui.comboBox_tr_model.insertItems(0, ['', ])
+        self.ui.comboBox_tr_model.insertItems(1, models)
+        self.clean_calc_data_tr()
 
     @QtCore.pyqtSlot(str)
     def on_clicked_comboBox_tr_model(self, model):
+        """
+        Поиск полных номинальных мощностей трансформаторов в базе
+        Добавление их в comboBox_tr_full_rated_capacity
+        """
+        manufacturer = self.ui.comboBox_tr_manufacturer.currentText()
+        # nominal_voltage_HV = dboperations.find_nominal_voltage_HV(manufacturer, model)
+        # self.ui.comboBox_U_sr_VN.clear()
+        # self.ui.comboBox_U_sr_VN.insertItems(0, nominal_voltage_HV)
+        full_rated_capacity = dboperations.find_full_rated_capacity(manufacturer, model)
+        self.ui.comboBox_tr_full_rated_capacity.clear()
+        if len(full_rated_capacity) > 1:
+            self.ui.comboBox_tr_full_rated_capacity.insertItems(0, ['', ])
+        self.ui.comboBox_tr_full_rated_capacity.insertItems(1, full_rated_capacity)
+        self.clean_calc_data_tr()
+
+    @QtCore.pyqtSlot(str)
+    def on_clicked_comboBox_tr_full_rated_capacity(self, full_rated_capacity):
         """
         Поиск номинальных напряжений ВН трансформаторов в базе
         Добавление их в comboBox_U_sr_VN
         """
         manufacturer = self.ui.comboBox_tr_manufacturer.currentText()
-        nominal_voltage_HV = dboperations.find_nominal_voltage_HV(manufacturer, model)
+        model = self.ui.comboBox_tr_model.currentText()
+        # nominal_voltage_HV = self.ui.comboBox_U_sr_VN.currentText()
+        # nominal_voltage_LV = self.ui.comboBox_U_sr_NN.currentText()
+        # connection_windings = self.ui.comboBox_tr_connection_windings.currentText()
+        # short_circuit_loss = dboperations.find_short_circuit_loss(manufacturer, model, nominal_voltage_HV,
+        #                                                           nominal_voltage_LV, connection_windings,
+        #                                                           full_rated_capacity)
+        nominal_voltage_HV = dboperations.find_nominal_voltage_HV(manufacturer, model, full_rated_capacity)
+        # self.ui.comboBox_tr_short_circuit_loss.clear()
+        # self.ui.comboBox_tr_short_circuit_loss.insertItems(0, short_circuit_loss)
         self.ui.comboBox_U_sr_VN.clear()
-        self.ui.comboBox_U_sr_VN.insertItems(0, nominal_voltage_HV)
+        if len(nominal_voltage_HV) > 1:
+            self.ui.comboBox_U_sr_VN.insertItems(0, ['', ])
+        self.ui.comboBox_U_sr_VN.insertItems(1, nominal_voltage_HV)
+        self.clean_calc_data_tr()
 
     @QtCore.pyqtSlot(str)
     def on_clicked_comboBox_U_sr_VN(self, nominal_voltage_HV):
@@ -147,9 +182,14 @@ class MainWindow(QMainWindow):
         """
         manufacturer = self.ui.comboBox_tr_manufacturer.currentText()
         model = self.ui.comboBox_tr_model.currentText()
-        nominal_voltage_LV = dboperations.find_nominal_voltage_LV(manufacturer, model, nominal_voltage_HV)
+        full_rated_capacity = self.ui.comboBox_tr_full_rated_capacity.currentText()
+        nominal_voltage_LV = dboperations.find_nominal_voltage_LV(manufacturer, model, full_rated_capacity,
+                                                                  nominal_voltage_HV)
         self.ui.comboBox_U_sr_NN.clear()
-        self.ui.comboBox_U_sr_NN.insertItems(0, nominal_voltage_LV)
+        if len(nominal_voltage_LV) > 1:
+            self.ui.comboBox_U_sr_NN.insertItems(0, ['', ])
+        self.ui.comboBox_U_sr_NN.insertItems(1, nominal_voltage_LV)
+        self.clean_calc_data_tr()
 
     @QtCore.pyqtSlot(str)
     def on_clicked_comboBox_U_sr_NN(self, nominal_voltage_LV):
@@ -159,44 +199,35 @@ class MainWindow(QMainWindow):
         """
         manufacturer = self.ui.comboBox_tr_manufacturer.currentText()
         model = self.ui.comboBox_tr_model.currentText()
+        full_rated_capacity = self.ui.comboBox_tr_full_rated_capacity.currentText()
         nominal_voltage_HV = self.ui.comboBox_U_sr_VN.currentText()
-        connection_windings = dboperations.find_connection_windings(manufacturer, model,
+        connection_windings = dboperations.find_connection_windings(manufacturer, model, full_rated_capacity,
                                                                     nominal_voltage_HV, nominal_voltage_LV)
         self.ui.comboBox_tr_connection_windings.clear()
-        self.ui.comboBox_tr_connection_windings.insertItems(0, connection_windings)
+        if len(connection_windings) > 1:
+            self.ui.comboBox_tr_connection_windings.insertItems(0, ['', ])
+        self.ui.comboBox_tr_connection_windings.insertItems(1, connection_windings)
+        self.clean_calc_data_tr()
 
     @QtCore.pyqtSlot(str)
     def on_clicked_comboBox_tr_connection_windings(self, connection_windings):
-        """
-        Поиск полных номинальных мощностей трансформаторов в базе
-        Добавление их в comboBox_tr_full_rated_capacity
-        """
-        manufacturer = self.ui.comboBox_tr_manufacturer.currentText()
-        model = self.ui.comboBox_tr_model.currentText()
-        nominal_voltage_HV = self.ui.comboBox_U_sr_VN.currentText()
-        nominal_voltage_LV = self.ui.comboBox_U_sr_NN.currentText()
-        full_rated_capacity = dboperations.find_full_rated_capacity(manufacturer, model, nominal_voltage_HV,
-                                                                    nominal_voltage_LV, connection_windings)
-        self.ui.comboBox_tr_full_rated_capacity.clear()
-        self.ui.comboBox_tr_full_rated_capacity.insertItems(0, full_rated_capacity)
-        # self.ui.comboBox_tr_full_rated_capacity.view().model().sort(0)
-
-    @QtCore.pyqtSlot(str)
-    def on_clicked_comboBox_tr_full_rated_capacity(self, full_rated_capacity):
         """
         Поиск потерь короткого замыкания трансформаторов в базе
         Добавление их в comboBox_tr_short_circuit_loss
         """
         manufacturer = self.ui.comboBox_tr_manufacturer.currentText()
         model = self.ui.comboBox_tr_model.currentText()
+        full_rated_capacity = self.ui.comboBox_tr_full_rated_capacity.currentText()
         nominal_voltage_HV = self.ui.comboBox_U_sr_VN.currentText()
         nominal_voltage_LV = self.ui.comboBox_U_sr_NN.currentText()
-        connection_windings = self.ui.comboBox_tr_connection_windings.currentText()
-        short_circuit_loss = dboperations.find_short_circuit_loss(manufacturer, model, nominal_voltage_HV,
-                                                                  nominal_voltage_LV, connection_windings,
-                                                                  full_rated_capacity)
+        short_circuit_loss = dboperations.find_short_circuit_loss(manufacturer, model, full_rated_capacity,
+                                                                  nominal_voltage_HV, nominal_voltage_LV,
+                                                                  connection_windings)
         self.ui.comboBox_tr_short_circuit_loss.clear()
-        self.ui.comboBox_tr_short_circuit_loss.insertItems(0, short_circuit_loss)
+        if len(short_circuit_loss) > 1:
+            self.ui.comboBox_tr_short_circuit_loss.insertItems(0, ['', ])
+        self.ui.comboBox_tr_short_circuit_loss.insertItems(1, short_circuit_loss)
+        self.clean_calc_data_tr()
 
     @QtCore.pyqtSlot(str)
     def on_clicked_comboBox_tr_short_circuit_loss(self, short_circuit_loss):
@@ -206,18 +237,22 @@ class MainWindow(QMainWindow):
         """
         manufacturer = self.ui.comboBox_tr_manufacturer.currentText()
         model = self.ui.comboBox_tr_model.currentText()
+        full_rated_capacity = self.ui.comboBox_tr_full_rated_capacity.currentText()
         nominal_voltage_HV = self.ui.comboBox_U_sr_VN.currentText()
         nominal_voltage_LV = self.ui.comboBox_U_sr_NN.currentText()
         connection_windings = self.ui.comboBox_tr_connection_windings.currentText()
-        full_rated_capacity = self.ui.comboBox_tr_full_rated_capacity.currentText()
-        impedance_voltage = dboperations.find_impedance_voltage(manufacturer, model, nominal_voltage_HV,
-                                                                nominal_voltage_LV, connection_windings,
-                                                                full_rated_capacity, short_circuit_loss)
+        impedance_voltage = dboperations.find_impedance_voltage(manufacturer, model, full_rated_capacity,
+                                                                nominal_voltage_HV, nominal_voltage_LV,
+                                                                connection_windings, short_circuit_loss)
         self.ui.comboBox_tr_impedance_voltage.clear()
-        self.ui.comboBox_tr_impedance_voltage.insertItems(0, impedance_voltage)
+        if len(impedance_voltage) > 1:
+            self.ui.comboBox_tr_impedance_voltage.insertItems(0, ['', ])
+        self.ui.comboBox_tr_impedance_voltage.insertItems(1, impedance_voltage)
 
         msg = "Данные трансформатора введены успешно."
         self.statusBar().showMessage(msg)
+
+        self.clean_calc_data_tr()
 
     def calc_tr_data(self):
         # Считывание данных трансформатора
@@ -241,15 +276,14 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage(msg)
         else:
             # Pk_nom, U_NN_nom, St_nom, u_k, R0t, X0t,  # Трансформатор
-            R1t = sccc.calc_Rt(Pk_nom, U_NN_nom*1000, St_nom)
-            X1t = sccc.calc_Xt(Pk_nom, U_NN_nom*1000, St_nom, u_k)
+            R1t = sccc.calc_Rt(Pk_nom, U_NN_nom * 1000, St_nom)
+            X1t = sccc.calc_Xt(Pk_nom, U_NN_nom * 1000, St_nom, u_k)
             # print(R1t, X1t)
             self.ui.lineEdit_Rt.setText("{:.2f}".format(R1t))
             self.ui.lineEdit_Xt.setText("{:.2f}".format(X1t))
             if self.ui.comboBox_tr_connection_windings.currentText() == "Δ/Yн-11":
                 R0t = R1t
                 X0t = X1t
-                print('Rt = ', R0t, 'Xt = ', X0t)
                 self.ui.lineEdit_R0t.setText("{:.2f}".format(R0t))
                 self.ui.lineEdit_X0t.setText("{:.2f}".format(X0t))
                 msg = "Расчетные данные трансформатора вычислены успешно."
@@ -259,6 +293,12 @@ class MainWindow(QMainWindow):
                 self.ui.lineEdit_X0t.setText("")
                 msg = "Введите сопротивление нулевой последовательности трансформатора вручную."
                 self.statusBar().showMessage(msg)
+
+    def clean_calc_data_tr(self):
+        self.ui.lineEdit_Rt.clear()
+        self.ui.lineEdit_Xt.clear()
+        self.ui.lineEdit_R0t.clear()
+        self.ui.lineEdit_X0t.clear()
 
     def checked_radioButton_tr_from_db(self):
         self.ui.comboBox_tr_manufacturer.blockSignals(False)
@@ -313,6 +353,44 @@ class MainWindow(QMainWindow):
         self.save_settings()
         e.accept()
 
+    def clean_form(self):
+        """Полная очистка формы"""
+        tr_from_db_state = self.ui.radioButton_tr_from_db.isChecked()
+        self.ui.radioButton_tr_from_db.setChecked(not tr_from_db_state)
+        self.ui.radioButton_tr_manual.setChecked(tr_from_db_state)
+        self.clean_calc_data_tr()
+
+        self.ui.lineEdit_Sk_IkVN_Xs.clear()
+        self.ui.comboBox_Sk_IkVN_Xs.setCurrentIndex(2)
+
+        self.ui.lineEdit_Rsh.clear()
+        self.ui.lineEdit_Xsh.clear()
+        self.ui.lineEdit_R_1kb.clear()
+        self.ui.lineEdit_X_1kb.clear()
+        self.ui.lineEdit_Rvl.clear()
+        self.ui.lineEdit_Xvl.clear()
+        self.ui.lineEdit_R0sh.clear()
+        self.ui.lineEdit_X0sh.clear()
+        self.ui.lineEdit_R_0kb.clear()
+        self.ui.lineEdit_X_0kb.clear()
+        self.ui.lineEdit_R0vl.clear()
+        self.ui.lineEdit_X0vl.clear()
+
+        self.ui.tabWidget_2.setCurrentIndex(0)
+        self.ui.lineEdit_Rpr.clear()
+        self.ui.lineEdit_Xpr.clear()
+        self.ui.lineEdit_Rr.clear()
+        self.ui.lineEdit_Xr.clear()
+        self.ui.lineEdit_Rk.clear()
+        self.ui.lineEdit_Rkv.clear()
+        self.ui.lineEdit_Xkv.clear()
+        self.ui.lineEdit_Rta.clear()
+        self.ui.lineEdit_Xta.clear()
+        self.ui.lineEdit_Rd.clear()
+
+        msg = "Форма очищена."
+        self.statusBar().showMessage(msg)
+
     def read_settings(self):
         """Чтение настроек"""
         self.settings.beginGroup("Transformer")
@@ -321,10 +399,10 @@ class MainWindow(QMainWindow):
         self.ui.radioButton_tr_manual.setChecked(not check_state)
         self.ui.comboBox_tr_manufacturer.setCurrentText(self.settings.value("tr_manufacturer"))
         self.ui.comboBox_tr_model.setCurrentText(self.settings.value("tr_model"))
+        self.ui.comboBox_tr_full_rated_capacity.setCurrentText(self.settings.value("tr_full_rated_capacity"))
         self.ui.comboBox_U_sr_VN.setCurrentText(self.settings.value("U_sr_VN", 10))
         self.ui.comboBox_U_sr_NN.setCurrentText(self.settings.value("U_sr_NN", 400))
         self.ui.comboBox_tr_connection_windings.setCurrentText(self.settings.value("tr_connection_windings"))
-        self.ui.comboBox_tr_full_rated_capacity.setCurrentText(self.settings.value("tr_full_rated_capacity"))
         self.ui.comboBox_tr_short_circuit_loss.setCurrentText(self.settings.value("tr_short_circuit_loss"))
         self.ui.comboBox_tr_impedance_voltage.setCurrentText(self.settings.value("tr_impedance_voltage"))
         self.ui.lineEdit_Rt.setText(str(self.settings.value("Rt", 0)))
@@ -367,16 +445,19 @@ class MainWindow(QMainWindow):
         self.ui.lineEdit_Rd.setText(str(self.settings.value("Rd", 0)))
         self.settings.endGroup()
 
+        msg = "Загружены данные предыдущего расчёта."
+        self.statusBar().showMessage(msg)
+
     def save_settings(self):
         """Сохранение настроек"""
         self.settings.beginGroup("Transformer")
         self.settings.setValue("tr_from_db", self.ui.radioButton_tr_from_db.isChecked())
         self.settings.setValue('tr_manufacturer', self.ui.comboBox_tr_manufacturer.currentText())
         self.settings.setValue('tr_model', self.ui.comboBox_tr_model.currentText())
+        self.settings.setValue('tr_full_rated_capacity', self.ui.comboBox_tr_full_rated_capacity.currentText())
         self.settings.setValue('U_sr_VN', self.ui.comboBox_U_sr_VN.currentText())
         self.settings.setValue('U_sr_NN', self.ui.comboBox_U_sr_NN.currentText())
         self.settings.setValue('tr_connection_windings', self.ui.comboBox_tr_connection_windings.currentText())
-        self.settings.setValue('tr_full_rated_capacity', self.ui.comboBox_tr_full_rated_capacity.currentText())
         self.settings.setValue('tr_short_circuit_loss', self.ui.comboBox_tr_short_circuit_loss.currentText())
         self.settings.setValue('tr_impedance_voltage', self.ui.comboBox_tr_impedance_voltage.currentText())
         self.settings.setValue('Rt', self.ui.lineEdit_Rt.text())
@@ -453,8 +534,7 @@ class MainWindow(QMainWindow):
 
             switch = switch_Xc(self.ui.comboBox_Sk_IkVN_Xs.currentIndex())
             # Вычисление эквивалентного индуктивного сопротивления системы
-            x_s = sccc.calc_Xs(switch, Sk_IkVN_Xs_Iotklnom, U_sr_NN*1000, U_sr_VN)
-            print('Xs = ', x_s)
+            x_s = sccc.calc_Xs(switch, Sk_IkVN_Xs_Iotklnom, U_sr_NN * 1000, U_sr_VN)
 
         # Считывание данных трансформатора
         try:
@@ -601,7 +681,7 @@ class MainWindow(QMainWindow):
              self.i_ud_1ph_min,
              self.Ip0_2ph_max, self.Ip0_2ph_min, self.i_a0_2ph_max, self.i_a0_2ph_min, self.i_ud_2ph_max,
              self.i_ud_2ph_min] = sccc.calc_short_current(
-                U_sr_NN*1000,
+                U_sr_NN * 1000,
                 x_s,  # Система
                 Rt, Xt, R0t, X0t,  # Трансформатор
                 Rpr, Xpr,  # Прочие элементы цепи, заданные одним значением
@@ -709,7 +789,10 @@ class MainWindow(QMainWindow):
     @QtCore.pyqtSlot()
     def show_about_window(self):
         """Отображение окна сведений о программе"""
-        return QMessageBox.about(self, "О программе", "Описание программы")
+        return QMessageBox.about(self,
+                                 "О программе",
+                                 "Автоматизация расчета токов короткого замыкания в электроустановках до 1 кВ\n" \
+                                 "Версия 1.0")
 
     @QtCore.pyqtSlot()
     def show_aboutqt_window(self):
@@ -789,8 +872,8 @@ class MainWindow(QMainWindow):
             x1 = float(resistance[1]) * linelength / parallel_fider
             rnc = float(resistance[2]) * linelength / parallel_fider
             # xnc = float(resistance[3]) * linelength / parallel_fider
-            r0 = r1 + 3*rnc
-            x0 = 8.5*x1
+            r0 = r1 + 3 * rnc
+            x0 = 8.5 * x1
             self.ui.lineEdit_Rsh.setText("{:.2f}".format(r1))
             self.ui.lineEdit_Xsh.setText("{:.2f}".format(x1))
             self.ui.lineEdit_R0sh.setText("{:.2f}".format(r0))

@@ -52,8 +52,12 @@ def create_table(table_name):
             if table_name == 'transformer':
                 # Создание таблицы "трансформатор"
                 cursor.execute("""CREATE TABLE IF NOT EXISTS transformer
-                                  (manufacturer TEXT, model TEXT, nominal_voltage_HV TEXT, nominal_voltage_LV TEXT,
-                                  connection_windings TEXT, full_rated_capacity TEXT, short_circuit_loss TEXT,
+                                  (manufacturer TEXT, 
+                                  model TEXT, 
+                                  full_rated_capacity TEXT, 
+                                  nominal_voltage_HV TEXT, nominal_voltage_LV TEXT,
+                                  connection_windings TEXT, 
+                                  short_circuit_loss TEXT,
                                   impedance_voltage TEXT)
                                """)
             elif table_name == 'cable':
@@ -109,8 +113,9 @@ def copy_from_csv_to_db(filename, tablename):
                 'INSERT OR IGNORE INTO cable VALUES (?,?,?,?,?,?,?,?)'),
            'transformer':
                ("""SELECT * FROM transformer
-                    WHERE manufacturer=? AND model=? AND nominal_voltage_HV=? AND nominal_voltage_LV=? AND 
-                    connection_windings=? AND full_rated_capacity=? AND short_circuit_loss=? AND impedance_voltage=?""",
+                    WHERE manufacturer=? AND model=? AND full_rated_capacity=? 
+                    AND nominal_voltage_HV=? AND nominal_voltage_LV=? 
+                    AND connection_windings=? AND short_circuit_loss=? AND impedance_voltage=?""",
                 'INSERT OR IGNORE INTO transformer VALUES (?,?,?,?,?,?,?,?)'),
            }
     with DataConn(DB_PATH) as conn:
@@ -316,10 +321,25 @@ def find_models(*args):
     return SortedSet(models)
 
 
+def find_full_rated_capacity(*args):
+    with DataConn(DB_PATH) as conn:
+        cursor = conn.cursor()
+        sql = """SELECT full_rated_capacity FROM transformer
+                  WHERE manufacturer=? AND model=?"""
+        cursor.execute(sql, args)
+        res = [i[0] for i in cursor.fetchall()]
+        res = list(set(res))
+        if len(res) > 1:
+            res.sort()
+            res.sort(key=len)
+    return res
+
+
 def find_nominal_voltage_HV(*args):
     with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
-        sql = "SELECT nominal_voltage_HV FROM transformer WHERE manufacturer=? AND model=?"
+        sql = """SELECT nominal_voltage_HV FROM transformer 
+                  WHERE manufacturer=? AND model=? AND full_rated_capacity=?"""
         cursor.execute(sql, args)
         res = [i[0] for i in cursor.fetchall()]
         res = list(set(res))
@@ -332,7 +352,9 @@ def find_nominal_voltage_HV(*args):
 def find_nominal_voltage_LV(*args):
     with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
-        sql = "SELECT nominal_voltage_LV FROM transformer WHERE manufacturer=? AND model=? AND nominal_voltage_HV=?"
+        sql = """SELECT nominal_voltage_LV FROM transformer 
+                  WHERE manufacturer=? AND model=? AND full_rated_capacity=? 
+                  AND nominal_voltage_HV=?"""
         cursor.execute(sql, args)
         res = [i[0] for i in cursor.fetchall()]
         res = list(set(res))
@@ -346,33 +368,20 @@ def find_connection_windings(*args):
     with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = """SELECT connection_windings FROM transformer
-                  WHERE manufacturer=? AND model=? AND nominal_voltage_HV=? AND nominal_voltage_LV=?"""
+                  WHERE manufacturer=? AND model=? AND full_rated_capacity=? 
+                  AND nominal_voltage_HV=? AND nominal_voltage_LV=?"""
         cursor.execute(sql, args)
         connection_windings = [i[0] for i in cursor.fetchall()]
     return SortedSet(connection_windings)
-
-
-def find_full_rated_capacity(*args):
-    with DataConn(DB_PATH) as conn:
-        cursor = conn.cursor()
-        sql = """SELECT full_rated_capacity FROM transformer
-                  WHERE manufacturer=? AND model=? AND nominal_voltage_HV=? AND 
-                        nominal_voltage_LV=? AND connection_windings=?"""
-        cursor.execute(sql, args)
-        res = [i[0] for i in cursor.fetchall()]
-        res = list(set(res))
-        if len(res) > 1:
-            res.sort()
-            res.sort(key=len)
-    return res
 
 
 def find_short_circuit_loss(*args):
     with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = """SELECT short_circuit_loss FROM transformer
-                  WHERE manufacturer=? AND model=? AND nominal_voltage_HV=? AND 
-                        nominal_voltage_LV=? AND connection_windings=? AND full_rated_capacity=?"""
+                  WHERE manufacturer=? AND model=? AND full_rated_capacity=? 
+                  AND nominal_voltage_HV=? AND nominal_voltage_LV=? 
+                  AND connection_windings=?"""
         cursor.execute(sql, args)
         rows = cursor.fetchall()
         res = [i[0] for i in rows]
@@ -386,9 +395,9 @@ def find_impedance_voltage(*args):
     with DataConn(DB_PATH) as conn:
         cursor = conn.cursor()
         sql = """SELECT impedance_voltage FROM transformer
-                  WHERE manufacturer=? AND model=? AND nominal_voltage_HV=? AND 
-                        nominal_voltage_LV=? AND connection_windings=? AND 
-                        full_rated_capacity=? AND short_circuit_loss=?"""
+                  WHERE manufacturer=? AND model=? AND full_rated_capacity=? 
+                  AND nominal_voltage_HV=? AND nominal_voltage_LV=? 
+                  AND connection_windings=? AND short_circuit_loss=?"""
         cursor.execute(sql, args)
         rows = cursor.fetchall()
         res = [i[0] for i in rows]
@@ -404,5 +413,6 @@ if __name__ == "__main__":
     # copy_from_csv_to_db('db/Шинопровод.csv', 'busway')
     # for i in range(6,15):
     #     copy_from_csv_to_db('db/Таблица' + str(i) + '.csv', 'cable')
+    copy_from_csv_to_db('db/Тр-р ГОСТ 12020-76 табл.1.csv', 'transformer')
     copy_from_csv_to_db('db/Тр-р ГОСТ 11920-85 табл.4.csv', 'transformer')
     pass
