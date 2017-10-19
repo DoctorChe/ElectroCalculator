@@ -420,8 +420,8 @@ class MainWindow(QMainWindow):
         self.ui.comboBox_tr_manufacturer.setCurrentText(self.settings.value("tr_manufacturer"))
         self.ui.comboBox_tr_model.setCurrentText(self.settings.value("tr_model"))
         self.ui.comboBox_tr_full_rated_capacity.setCurrentText(self.settings.value("tr_full_rated_capacity"))
-        self.ui.comboBox_U_sr_VN.setCurrentText(self.settings.value("U_sr_VN", 10))
-        self.ui.comboBox_U_sr_NN.setCurrentText(self.settings.value("U_sr_NN", 400))
+        self.ui.comboBox_U_sr_VN.setCurrentText(self.settings.value("U_sr_VN"))
+        self.ui.comboBox_U_sr_NN.setCurrentText(self.settings.value("U_sr_NN"))
         self.ui.comboBox_tr_connection_windings.setCurrentText(self.settings.value("tr_connection_windings"))
         self.ui.comboBox_tr_short_circuit_loss.setCurrentText(self.settings.value("tr_short_circuit_loss"))
         self.ui.comboBox_tr_impedance_voltage.setCurrentText(self.settings.value("tr_impedance_voltage"))
@@ -519,6 +519,9 @@ class MainWindow(QMainWindow):
         self.settings.setValue('Xta', self.ui.lineEdit_Xta.text())
         self.settings.setValue('Rd', self.ui.lineEdit_Rd.text())
         self.settings.endGroup()
+
+        msg = "Данные расчёта сохранены."
+        self.statusBar().showMessage(msg)
 
     # @property
     def start_calculation(self):
@@ -782,6 +785,9 @@ class MainWindow(QMainWindow):
         renderer = Renderer(template, context, result, overwriteExisting=True)
         renderer.run()
 
+        msg = "Отчёт сохранён в файле './template/result.odt'."
+        self.statusBar().showMessage(msg)
+
     def save_report_docx(self):
         """Сохранение отчёта в файл DOCX"""
         template = "./template/А4_Приложение.docx"
@@ -808,6 +814,9 @@ class MainWindow(QMainWindow):
         )
         result = './template/result.docx'
         document.write(result)
+
+        msg = "Отчёт сохранён в файле './template/result.docx'."
+        self.statusBar().showMessage(msg)
 
     @QtCore.pyqtSlot()
     def open_file_dialog(self):
