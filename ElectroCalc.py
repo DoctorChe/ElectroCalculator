@@ -8,6 +8,7 @@ from ui.ui_mainwindow import Ui_MainWindow
 from PyQt5.QtWidgets import QApplication, QFileDialog, QMessageBox, QMainWindow
 from PyQt5 import QtCore, QtWidgets
 from PyQt5 import QtGui
+from mailmerge import MailMerge
 import short_circuit_current_calculation as sccc
 import dboperations
 import addcabledialog
@@ -97,6 +98,25 @@ class MainWindow(QMainWindow):
         self.ui.lineEdit_Rta.setValidator(self.v)
         self.ui.lineEdit_Xta.setValidator(self.v)
         self.ui.lineEdit_Rd.setValidator(self.v)
+
+        self.Ip0_1ph_max = 0
+        self.Ip0_1ph_min = 0
+        self.i_ud_1ph_max = 0
+        self.i_ud_1ph_min = 0
+        self.i_a0_1ph_max = 0
+        self.i_a0_1ph_min = 0
+        self.Ip0_2ph_max = 0
+        self.Ip0_2ph_min = 0
+        self.i_ud_2ph_max = 0
+        self.i_ud_2ph_min = 0
+        self.i_a0_2ph_max = 0
+        self.i_a0_2ph_min = 0
+        self.Ip0_3ph_max = 0
+        self.Ip0_3ph_min = 0
+        self.i_ud_3ph_max = 0
+        self.i_ud_3ph_min = 0
+        self.i_a0_3ph_max = 0
+        self.i_a0_3ph_min = 0
 
     @QtCore.pyqtSlot(int)
     def on_clicked_comboBox_tr_regime(self, index):
@@ -734,6 +754,7 @@ class MainWindow(QMainWindow):
 
     def save_report_odt(self):
         """Сохранение отчёта в файл ODT"""
+        template = "./template/А4_Приложение.odt"
         # Ip0_3ph_max_exp = str(self.Ip0_3ph_max)
         # if not self.Ip0_3ph_max:
         #     print("Нет данных для отчёта")
@@ -757,12 +778,36 @@ class MainWindow(QMainWindow):
         context["i_ud_3ph_min_exp"] = "{:.2f}".format(self.i_ud_3ph_min)
         context["i_a0_3ph_max_exp"] = "{:.2f}".format(self.i_a0_3ph_max)
         context["i_a0_3ph_min_exp"] = "{:.2f}".format(self.i_a0_3ph_min)
-        # context = dict(Ip0_3ph_max_exp=str(self.Ip0_3ph_max))
-        # beingPaidForIt = True
-        # renderer = Renderer('./template/А4_Приложение_test.odt', globals(), './template/result.odt')
-        renderer = Renderer("./template/А4_Приложение_test.odt", context, "./template/result.odt",
-                            overwriteExisting=True)
+        result = './template/result.odt'
+        renderer = Renderer(template, context, result, overwriteExisting=True)
         renderer.run()
+
+    def save_report_docx(self):
+        """Сохранение отчёта в файл DOCX"""
+        template = "./template/А4_Приложение.docx"
+        document = MailMerge(template)
+        document.merge(
+            Ip0_1ph_max_exp="{:.2f}".format(self.Ip0_1ph_max),
+            Ip0_1ph_min_exp="{:.2f}".format(self.Ip0_1ph_min),
+            i_ud_1ph_max_exp="{:.2f}".format(self.i_ud_1ph_max),
+            i_ud_1ph_min_exp="{:.2f}".format(self.i_ud_1ph_min),
+            i_a0_1ph_max_exp="{:.2f}".format(self.i_a0_1ph_max),
+            i_a0_1ph_min_exp="{:.2f}".format(self.i_a0_1ph_min),
+            Ip0_2ph_max_exp="{:.2f}".format(self.Ip0_2ph_max),
+            Ip0_2ph_min_exp="{:.2f}".format(self.Ip0_2ph_min),
+            i_ud_2ph_max_exp="{:.2f}".format(self.i_ud_2ph_max),
+            i_ud_2ph_min_exp="{:.2f}".format(self.i_ud_2ph_min),
+            i_a0_2ph_max_exp="{:.2f}".format(self.i_a0_2ph_max),
+            i_a0_2ph_min_exp="{:.2f}".format(self.i_a0_2ph_min),
+            Ip0_3ph_max_exp="{:.2f}".format(self.Ip0_3ph_max),
+            Ip0_3ph_min_exp="{:.2f}".format(self.Ip0_3ph_min),
+            i_ud_3ph_max_exp="{:.2f}".format(self.i_ud_3ph_max),
+            i_ud_3ph_min_exp="{:.2f}".format(self.i_ud_3ph_min),
+            i_a0_3ph_max_exp="{:.2f}".format(self.i_a0_3ph_max),
+            i_a0_3ph_min_exp="{:.2f}".format(self.i_a0_3ph_min),
+        )
+        result = './template/result.docx'
+        document.write(result)
 
     @QtCore.pyqtSlot()
     def open_file_dialog(self):

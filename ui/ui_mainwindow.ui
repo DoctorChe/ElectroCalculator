@@ -3153,6 +3153,7 @@
      <string>Отчёт</string>
     </property>
     <addaction name="action_ODT"/>
+    <addaction name="action_DOCX"/>
    </widget>
    <widget class="QMenu" name="menu_Help">
     <property name="title">
@@ -3217,6 +3218,11 @@
   <action name="action_clean_form">
    <property name="text">
     <string>Очистить форму</string>
+   </property>
+  </action>
+  <action name="action_DOCX">
+   <property name="text">
+    <string>Сохранить отчёт как DOCX</string>
    </property>
   </action>
  </widget>
@@ -3615,6 +3621,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>action_DOCX</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>save_report_docx()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>365</x>
+     <y>401</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>on_clicked_comboBox_tr_regime(int)</slot>
@@ -3632,5 +3654,6 @@
   <slot>add_aerial_line_from_db()</slot>
   <slot>calc_tr_data()</slot>
   <slot>clean_form()</slot>
+  <slot>save_report_docx()</slot>
  </slots>
 </ui>
